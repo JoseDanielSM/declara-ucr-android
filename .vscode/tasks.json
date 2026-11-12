@@ -1,0 +1,27 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "DeclaraUCR: iniciar entorno local",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/horario_ucr-main/Start-Local.ps1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "DeclaraUCR: detener y guardar datos",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/horario_ucr-main/Stop-Local.ps1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "DeclaraUCR: comprobar servicios locales",
+      "type": "process",
+      "command": "node",
+      "args": ["scripts/check-local.cjs"],
+      "options": { "cwd": "${workspaceFolder}/horario_ucr-main" },
+      "problemMatcher": []
+    }
+  ]
+}

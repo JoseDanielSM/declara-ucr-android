@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "start": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./Start-Local.ps1",
+    "stop": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./Stop-Local.ps1",
+    "test:local": "node scripts/check-local.cjs",
+    "test:backend": "node --test security_tests/backend_validator.test.cjs"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "firebase": "^12.19.0"
+  }
+}

@@ -1,0 +1,35 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signed() {
+      return request.auth != null;
+    }
+
+    function role() {
+      return firestore.get(
+        /databases/(default)/documents/users/$(request.auth.uid)
+      ).data.role;
+    }
+
+    function canReadPdf(declarationId) {
+      let declaration = firestore.get(
+        /databases/(default)/documents/declarations/$(declarationId)
+      ).data;
+
+      return declaration.ownerId == request.auth.uid
+        || role() in ['rrhh', 'admin']
+        || (
+          declaration.superiorId == request.auth.uid
+          && role() == 'superior'
+        );
+    }
+
+    match /pdf/{declarationId}/{filename} {
+      allow read: if false;
+
+      // El guardado se realiza mediante la Cloud Function.
+      allow write: if false;
+    }
+  }
+}

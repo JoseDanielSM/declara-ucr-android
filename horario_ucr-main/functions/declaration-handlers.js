@@ -239,6 +239,47 @@ function createDeclarationHandlers({
   // GUARDAR BORRADOR
   // ==========================================================
 
+  async function saveDraft(request) {
+    const uid = uidOf(request);
+    const id = idOf(request.data?.id);
+    const version = versionOf(request.data?.version);
+    let data;
+    try { data = require('./draft-validation').normalizeDraft(request.data); }
+    catch (error) {
+      if (error instanceof ScheduleValidationError) deny('invalid-argument', error.message);
+      throw error;
+    }
+    const ref = db.collection('declarations').doc(id);
+    return db.runTransaction(async tx => {
+      const versionRef = ref.collection('versions').doc(String(version));
+      const [snapshot, saved, profile] = await Promise.all([
+        tx.get(ref), tx.get(versionRef), tx.get(db.collection('users').doc(uid)),
+      ]);
+      if (!profile.exists || profile.data().role !== 'declarante') deny('permission-denied', 'Solo un declarante puede guardar su borrador.');
+      const current = snapshot.data();
+      if (snapshot.exists) checkOwner(current, uid, version, 'BORRADOR');
+      else if (version !== 1) deny('invalid-argument', 'Una declaración nueva comienza en versión 1.');
+      const registeredId = profile.data().identification;
+      if (data.identification && registeredId && data.identification !== registeredId) deny('failed-precondition', 'La cédula no coincide con tu perfil.');
+      if (current?.identification && current.identification !== data.identification) deny('failed-precondition', 'La cédula guardada no se puede cambiar.');
+      if (!Object.hasOwn(request.data, 'additionalObservations')) data.additionalObservations = current?.additionalObservations ?? '';
+      let observations = '';
+      try { observations = generateDeclarationObservations({ ...data, observations: '' }); }
+      catch (error) { if (!(error instanceof ScheduleValidationError)) throw error; }
+      data.observations = observations;
+      if (saved.exists && (saved.data().ownerId !== uid || saved.data().version !== version)) deny('failed-precondition', 'La versión no corresponde a este borrador.');
+      if (current && saved.exists && current.formatVersion === 2 && current.observationsFormatVersion === 1 && Object.keys(data).every(key =>
+        isDeepStrictEqual(current[key] ?? '', data[key]) && isDeepStrictEqual(saved.data()[key] ?? '', data[key])
+      )) return { id, version, saved: false };
+      const stamp = FieldValue.serverTimestamp();
+      const patch = { ...data, ownerId: uid, version, status: 'BORRADOR', formatVersion: 2, observationsFormatVersion: 1, updatedAt: stamp };
+      const eventRef = event(tx, ref, uid, current ? 'MODIFICADA' : 'CREADA', version, 'BORRADOR', 'BORRADOR');
+      tx.set(ref, { ...current, ...patch, lastEditEventId: eventRef.id });
+      tx.set(versionRef, { ...(saved.data() ?? {}), ...patch, createdAt: saved.data()?.createdAt ?? stamp, lastEditEventId: eventRef.id });
+      return { id, version, saved: true };
+    });
+  }
+
   async function save(request) {
     const uid = uidOf(request);
     const input = request.data;
@@ -258,6 +299,7 @@ function createDeclarationHandlers({
       'version',
       'periodId',
       'superiorId',
+      'additionalObservations',
       ...fields,
     ];
 
@@ -414,6 +456,10 @@ function createDeclarationHandlers({
       const editable = Object.fromEntries(
         fields.map(key => [key, normalized[key]])
       );
+      if (input.additionalObservations !== undefined) {
+        if (typeof input.additionalObservations !== 'string' || input.additionalObservations.length > 2000) deny('invalid-argument', 'Las observaciones admiten hasta 2000 caracteres.');
+        editable.additionalObservations = input.additionalObservations.trim();
+      } else if (current?.additionalObservations !== undefined) editable.additionalObservations = current.additionalObservations;
 
       const enablingAutomatic =
         automatic &&
@@ -424,6 +470,7 @@ function createDeclarationHandlers({
       if (
         !isNew &&
         !enablingAutomatic &&
+        (input.additionalObservations === undefined || input.additionalObservations.trim() === (current.additionalObservations ?? '')) &&
         fields.every(key =>
           isDeepStrictEqual(
             current[key],
@@ -585,6 +632,10 @@ function createDeclarationHandlers({
 
       checkSuperior(superiorSnapshot, uid);
 
+      const period = await tx.get(db.collection('periods').doc(idOf(current.periodId)));
+      if (!period.exists || period.data().enabled !== true) deny('failed-precondition', 'El período no está habilitado.');
+      if ((current.additionalObservations ?? '').length > 2000) deny('invalid-argument', 'Las observaciones superan 2000 caracteres.');
+
       // Conserva todas las reglas de horarios,
       // incluido el máximo de diez horas diarias.
       const totals = validate(
@@ -615,6 +666,7 @@ function createDeclarationHandlers({
         saved.version !== version ||
         saved.periodId !== current.periodId ||
         saved.superiorId !== current.superiorId ||
+        (saved.additionalObservations ?? '') !== (current.additionalObservations ?? '') ||
         (saved.observationsFormatVersion ?? 0) !==
           (current.observationsFormatVersion ?? 0) ||
         fields.some(key =>
@@ -747,6 +799,7 @@ function createDeclarationHandlers({
 
   return {
     save,
+    saveDraft,
     validateStored,
     newVersion,
     listSuperiors,

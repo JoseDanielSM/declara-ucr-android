@@ -401,7 +401,7 @@ function validateDeclarationData(
       const fraction = job.workloadFraction;
 
       if (
-        requireInstitutionalFraction &&
+        !outside && requireInstitutionalFraction &&
         !positions.has(job.position)
       ) {
         fail(

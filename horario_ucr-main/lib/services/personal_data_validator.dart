@@ -68,6 +68,7 @@ class PersonalDataValidator {
       email(declaration.email),
       unit(declaration.unit),
       observations(declaration.observations),
+      observations(declaration.additionalObservations),
     ];
     return results.whereType<String>().toList();
   }

@@ -15,6 +15,13 @@ import 'declaration_observations.dart';
 
 import 'package:cloud_functions/cloud_functions.dart';
 
+class SaveResult {
+  final String id;
+  final int version;
+  final bool saved;
+  const SaveResult(this.id, this.version, this.saved);
+}
+
 class DeclarationService {
   final FirebaseFirestore db = FirebaseFirestore.instance;
 
@@ -67,11 +74,10 @@ class DeclarationService {
   // GUARDAR DECLARACIONES
   // ==========================================================
 
-  Future<void> save(Declaration declaration) async {
+  Future<SaveResult> save(Declaration declaration) async {
     if (declaration.status != 'BORRADOR') {
       throw StateError('Solo se pueden guardar borradores.');
     }
-    PersonalDataValidator.ensureValid(declaration);
     final summary = declaration.observations.trim().isNotEmpty
         ? declaration.observations
         : generateDeclarationSummary(declaration.toMap());
@@ -79,10 +85,10 @@ class DeclarationService {
       throw StateError('El resumen supera el máximo de 2000 caracteres.');
     }
     final callable = FirebaseFunctions.instanceFor(region: 'us-east1')
-        .httpsCallable('saveDeclarationValidated');
+        .httpsCallable('saveDeclarationDraft');
     try {
       final result = await callable.call(<String, dynamic>{
-        'id': declaration.id,
+        'id': declaration.id.isEmpty ? declarations.doc().id : declaration.id,
         'version': declaration.version,
         'periodId': declaration.periodId,
         'superiorId': declaration.superiorId,
@@ -92,15 +98,15 @@ class DeclarationService {
         'email': declaration.email,
         'unit': declaration.unit,
         'observations': summary,
+        'additionalObservations': declaration.additionalObservations,
         'appointments':
             declaration.appointments.map((job) => job.toMap()).toList(),
         'externalJobs':
             declaration.externalJobs.map((job) => job.toMap()).toList(),
       });
       final response = Map<String, dynamic>.from(result.data as Map);
-      if (response['saved'] == false) {
-        throw StateError('No hay cambios para guardar.');
-      }
+      return SaveResult(response['id'] as String, declaration.version,
+          response['saved'] == true);
     } on FirebaseFunctionsException catch (error) {
       throw StateError(error.message ?? 'No se pudo guardar la declaración.');
     }
@@ -432,6 +438,7 @@ class DeclarationService {
       superiorId: saved.superiorId,
       status: current.status,
       observations: saved.observations,
+      additionalObservations: saved.additionalObservations,
       returnNote: current.returnNote,
       version: saved.version,
       appointments: saved.appointments,

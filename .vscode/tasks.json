@@ -2,6 +2,21 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "DeclaraUCR: iniciar Android",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/horario_ucr-main/Start-Android.ps1"],
+      "problemMatcher": []
+    },
+    {
+      "label": "DeclaraUCR: comprobar borradores y permisos",
+      "type": "process",
+      "command": "node",
+      "args": ["scripts/check-drafts.cjs"],
+      "options": { "cwd": "${workspaceFolder}/horario_ucr-main" },
+      "problemMatcher": []
+    },
+    {
       "label": "DeclaraUCR: iniciar entorno local",
       "type": "process",
       "command": "powershell.exe",

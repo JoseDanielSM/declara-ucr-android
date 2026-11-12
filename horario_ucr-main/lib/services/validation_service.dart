@@ -1,19 +1,35 @@
 import '../models/declaration.dart';
 
+class ValidationIssue {
+  final String message;
+  final int? day,
+      appointmentIndex,
+      blockIndex,
+      otherAppointmentIndex,
+      otherBlockIndex;
+  final bool external, otherExternal;
+  const ValidationIssue(this.message,
+      {this.day,
+      this.appointmentIndex,
+      this.blockIndex,
+      this.otherAppointmentIndex,
+      this.otherBlockIndex,
+      this.external = false,
+      this.otherExternal = false});
+}
+
 class ValidationResult {
   final List<String> errors;
   final double institutionalHours;
   final double externalHours;
   final double expectedHours;
+  final List<ValidationIssue> issues;
 
   bool get valid => errors.isEmpty;
 
-  const ValidationResult(
-    this.errors,
-    this.institutionalHours,
-    this.externalHours,
-    this.expectedHours,
-  );
+  const ValidationResult(this.errors, this.institutionalHours,
+      this.externalHours, this.expectedHours,
+      [this.issues = const []]);
 }
 
 class ValidationService {
@@ -69,8 +85,18 @@ class ValidationService {
     List<Appointment> external,
   ) {
     final errors = <String>[];
+    final issues = <ValidationIssue>[];
 
-    final byDay = <int, List<({int start, int end, String source})>>{};
+    final byDay = <int,
+        List<
+            ({
+              int start,
+              int end,
+              String source,
+              int jobIndex,
+              int blockIndex,
+              bool external
+            })>>{};
 
     double internal = 0;
     double outside = 0;
@@ -85,14 +111,24 @@ class ValidationService {
       ...external.map((job) => (job: job, external: true)),
     ];
 
-    for (final entry in allJobs) {
+    for (var jobNumber = 0; jobNumber < allJobs.length; jobNumber++) {
+      final entry = allJobs[jobNumber];
       final job = entry.job;
+      final jobIndex = entry.external ? jobNumber - jobs.length : jobNumber;
+      void problem(String message, {int? blockIndex, int? day}) {
+        errors.add(message);
+        issues.add(ValidationIssue(message,
+            appointmentIndex: jobIndex,
+            external: entry.external,
+            blockIndex: blockIndex,
+            day: day));
+      }
 
       if (job.workplace.trim().isEmpty ||
           job.position.trim().isEmpty ||
           job.startDate.isEmpty ||
           job.endDate.isEmpty) {
-        errors.add('Complete los datos del nombramiento: ${job.workplace}.');
+        problem('Complete los datos del nombramiento: ${job.workplace}.');
       }
 
       final startDate = parseDate(job.startDate);
@@ -102,13 +138,13 @@ class ValidationService {
 
       if (startDate == null ||
           (!noEndDate && (endDate == null || endDate.isBefore(startDate)))) {
-        errors.add('Vigencia inválida en ${job.workplace}.');
+        problem('Vigencia inválida en ${job.workplace}.');
       }
 
       final validExpectedHours =
           job.expectedHours.isFinite && job.expectedHours > 0;
       if (!validExpectedHours) {
-        errors.add(
+        problem(
           'La jornada debe ser un número finito mayor que cero '
           'en ${job.workplace}.',
         );
@@ -119,31 +155,37 @@ class ValidationService {
       }
 
       if (job.blocks.isEmpty) {
-        errors.add('Agregue al menos un horario a ${job.workplace}.');
+        problem('Agregue al menos un horario a ${job.workplace}.');
       }
 
-      for (final block in job.blocks) {
+      for (var blockIndex = 0; blockIndex < job.blocks.length; blockIndex++) {
+        final block = job.blocks[blockIndex];
         try {
           final start = minutes(block.start);
           final end = minutes(block.end);
 
           if (block.day < 1 || block.day > 6) {
-            errors.add('Solo se admiten horarios de lunes a sábado.');
+            problem('Solo se admiten horarios de lunes a sábado.',
+                blockIndex: blockIndex, day: block.day);
             continue;
           }
 
           if (end <= start) {
-            errors.add(
+            problem(
               'La hora final debe ser posterior a la inicial '
               '(${job.workplace}).',
+              blockIndex: blockIndex,
+              day: block.day,
             );
             continue;
           }
 
           if (start < 780 && end > 720) {
-            errors.add(
+            problem(
               'Horario excluido de 12:00 a 13:00 '
               'en ${job.workplace}.',
+              blockIndex: blockIndex,
+              day: block.day,
             );
           }
 
@@ -151,6 +193,9 @@ class ValidationService {
             start: start,
             end: end,
             source: job.workplace,
+            jobIndex: jobIndex,
+            blockIndex: blockIndex,
+            external: entry.external,
           ));
 
           final hours = (end - start) / 60;
@@ -161,7 +206,8 @@ class ValidationService {
             internal += hours;
           }
         } catch (_) {
-          errors.add('Formato de hora inválido en ${job.workplace}.');
+          problem('Formato de hora inválido en ${job.workplace}.',
+              blockIndex: blockIndex, day: block.day);
         }
       }
     }
@@ -196,10 +242,14 @@ class ValidationService {
       }
 
       if (totalMinutes > 600) {
-        errors.add(
-          'Día ${entry.key}: excede el máximo '
-          'de 10 horas declaradas.',
-        );
+        final message =
+            'Día ${entry.key}: excede el máximo de 10 horas declaradas.';
+        errors.add(message);
+        issues.add(ValidationIssue(message,
+            day: entry.key,
+            appointmentIndex: blocks.first.jobIndex,
+            blockIndex: blocks.first.blockIndex,
+            external: blocks.first.external));
       }
 
       // Detectar traslapes internos y externos.
@@ -214,12 +264,19 @@ class ValidationService {
 
             final overlapEnd = first.end < second.end ? first.end : second.end;
 
-            errors.add(
-              'Día ${entry.key}: traslape '
-              '${formatMinutes(overlapStart)}–'
-              '${formatMinutes(overlapEnd)} '
-              'entre ${first.source} y ${second.source}.',
-            );
+            final message = 'Día ${entry.key}: traslape '
+                '${formatMinutes(overlapStart)}–'
+                '${formatMinutes(overlapEnd)} '
+                'entre ${first.source} (bloque ${first.blockIndex + 1}) y ${second.source} (bloque ${second.blockIndex + 1}).';
+            errors.add(message);
+            issues.add(ValidationIssue(message,
+                day: entry.key,
+                appointmentIndex: first.jobIndex,
+                blockIndex: first.blockIndex,
+                external: first.external,
+                otherAppointmentIndex: second.jobIndex,
+                otherBlockIndex: second.blockIndex,
+                otherExternal: second.external));
           }
         }
       }
@@ -234,6 +291,11 @@ class ValidationService {
       );
     }
 
-    return ValidationResult(errors, internal, outside, expected);
+    return ValidationResult(errors, internal, outside, expected, [
+      ...issues,
+      for (final message in errors
+          .where((message) => !issues.any((issue) => issue.message == message)))
+        ValidationIssue(message),
+    ]);
   }
 }

@@ -7,13 +7,12 @@ import '../theme/ucr_colors.dart';
 import '../models/declaration.dart';
 import '../services/declaration_service.dart';
 import '../services/validation_service.dart';
-import '../services/personal_data_validator.dart';
-import '../services/profile_service.dart';
+import 'declaration_editor.dart';
+export 'declaration_editor.dart' show EditorPage;
 import 'notification_bell.dart';
 
 import 'admin_page.dart';
 import 'personal_profile_page.dart';
-import 'superior_selector.dart';
 import 'declaration_views.dart' as declaration_views;
 
 const days = [
@@ -259,13 +258,13 @@ class _DashboardState extends State<Dashboard> {
   Color _statusColor(String status) {
     switch (status) {
       case 'FINALIZADA':
-        return const Color(0xFF167E73);
+        return UcrColors.success;
       case 'DEVUELTA':
-        return const Color(0xFFD18A00);
+        return UcrColors.warning;
       case 'ANULADA':
-        return const Color(0xFFB54757);
+        return UcrColors.warning;
       case 'BORRADOR':
-        return const Color(0xFF64748B);
+        return UcrColors.muted;
       default:
         return UcrColors.blue;
     }
@@ -323,10 +322,10 @@ class _DashboardState extends State<Dashboard> {
     Color accent,
   ) {
     final Color backgroundColor = switch (label) {
-      'Total de declaraciones' => const Color(0xFFEAF4FF),
-      'Pendientes' => const Color(0xFFF0F8FF),
-      'Finalizadas' => const Color(0xFFF0F8FB),
-      _ => const Color(0xFFF6F9FD),
+      'Total de declaraciones' => UcrColors.background,
+      'Pendientes' => UcrColors.white,
+      'Finalizadas' => UcrColors.white,
+      _ => UcrColors.white,
     };
 
     return Container(
@@ -365,7 +364,7 @@ class _DashboardState extends State<Dashboard> {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: Color(0xFF142B50),
+                color: UcrColors.blue,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
               ),
@@ -460,7 +459,7 @@ class _DashboardState extends State<Dashboard> {
           _action(
             d,
             'signOwner',
-            'Firmar bajo juramento',
+            'Firmar internamente',
             primary: true,
           ),
         if (role == 'declarante' && d.status == 'FIRMADA_POR_DECLARANTE')
@@ -483,7 +482,7 @@ class _DashboardState extends State<Dashboard> {
           _action(
             d,
             'signSuperior',
-            'Aprobar y firmar',
+            'Aprobar y firmar internamente',
             primary: true,
           ),
           _action(
@@ -577,7 +576,7 @@ class _DashboardState extends State<Dashboard> {
         vertical: 17,
       ),
       decoration: const BoxDecoration(
-        color: Color(0xFFF1F6FB),
+        color: UcrColors.white,
         border: Border(
           bottom: BorderSide(color: UcrColors.border),
         ),
@@ -662,7 +661,7 @@ class _DashboardState extends State<Dashboard> {
                       width: 42,
                       height: 42,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE8F2FA),
+                        color: UcrColors.background,
                         borderRadius: BorderRadius.circular(11),
                       ),
                       child: const Icon(
@@ -693,7 +692,7 @@ class _DashboardState extends State<Dashboard> {
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
                               fontSize: 12,
-                              color: Color(0xFF64748B),
+                              color: UcrColors.muted,
                             ),
                           ),
                         ],
@@ -725,7 +724,7 @@ class _DashboardState extends State<Dashboard> {
                   _date(d.updatedAt),
                   style: const TextStyle(
                     fontSize: 12,
-                    color: Color(0xFF64748B),
+                    color: UcrColors.muted,
                   ),
                 ),
               ),
@@ -758,7 +757,7 @@ class _DashboardState extends State<Dashboard> {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE8F2FA),
+                  color: UcrColors.background,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
@@ -794,7 +793,7 @@ class _DashboardState extends State<Dashboard> {
             'Actualizado: ${_date(d.updatedAt)}',
             style: const TextStyle(
               fontSize: 12,
-              color: Color(0xFF64748B),
+              color: UcrColors.muted,
             ),
           ),
           const SizedBox(height: 14),
@@ -810,7 +809,7 @@ class _DashboardState extends State<Dashboard> {
     String label, {
     bool primary = false,
   }) {
-    final handler = () {
+    void handler() {
       if (key == 'return') {
         askReturn(d);
       } else if (key == 'signOwner') {
@@ -818,7 +817,7 @@ class _DashboardState extends State<Dashboard> {
       } else {
         act(d, key);
       }
-    };
+    }
 
     return primary
         ? FilledButton(
@@ -968,7 +967,7 @@ class _DashboardState extends State<Dashboard> {
               children: [
                 const CircleAvatar(
                   radius: 25,
-                  backgroundColor: Color(0xFFEAF3FA),
+                  backgroundColor: UcrColors.background,
                   child: Icon(
                     Icons.person_outline,
                     color: UcrColors.blue,
@@ -992,14 +991,14 @@ class _DashboardState extends State<Dashboard> {
                         email,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF64748B),
+                          color: UcrColors.muted,
                         ),
                       ),
                       Text(
                         'Rol: $role',
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF64748B),
+                          color: UcrColors.muted,
                         ),
                       ),
                     ],
@@ -1060,12 +1059,12 @@ class _DashboardState extends State<Dashboard> {
             contentPadding: EdgeInsets.zero,
             leading: Icon(
               Icons.logout,
-              color: Color(0xFFB42335),
+              color: UcrColors.warning,
             ),
             title: Text(
               'Cerrar sesión',
               style: TextStyle(
-                color: Color(0xFFB42335),
+                color: UcrColors.warning,
               ),
             ),
           ),
@@ -1102,7 +1101,7 @@ class _DashboardState extends State<Dashboard> {
     VoidCallback action,
   ) {
     return Material(
-      color: const Color(0xFFE5F3FF),
+      color: UcrColors.background,
       borderRadius: BorderRadius.circular(14),
       child: InkWell(
         onTap: action,
@@ -1113,14 +1112,14 @@ class _DashboardState extends State<Dashboard> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: const Color(0xFFCEE6F9),
+              color: UcrColors.background,
             ),
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Color(0xFFEDF8FF),
-                Color(0xFFC8E9FF),
+                UcrColors.white,
+                UcrColors.border,
               ],
             ),
           ),
@@ -1129,10 +1128,10 @@ class _DashboardState extends State<Dashboard> {
             children: [
               CircleAvatar(
                 radius: 26,
-                backgroundColor: const Color(0xFFD0E9FC),
+                backgroundColor: UcrColors.background,
                 child: Icon(
                   icon,
-                  color: const Color(0xFF0067B7),
+                  color: UcrColors.blue,
                   size: 28,
                 ),
               ),
@@ -1142,7 +1141,7 @@ class _DashboardState extends State<Dashboard> {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  color: Color(0xFF07194D),
+                  color: UcrColors.blue,
                   fontSize: 18,
                   fontWeight: FontWeight.w800,
                 ),
@@ -1153,7 +1152,7 @@ class _DashboardState extends State<Dashboard> {
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  color: Color(0xFF4C6F9A),
+                  color: UcrColors.muted,
                   fontSize: 12,
                 ),
               ),
@@ -1188,15 +1187,36 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _welcomeBanner() {
+    if (MediaQuery.sizeOf(context).width < 600) {
+      return Card(
+          child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Bienvenido(a), $_displayName',
+                        style: const TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: UcrColors.blue)),
+                    const SizedBox(height: 12),
+                    const Text('DeclaraUCR',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold)),
+                    const Text(
+                        'Sistema de Declaraciones Juradas de Horario y Jornada de Trabajo'),
+                  ])));
+    }
+
     return Container(
-      height: 236,
+      height: MediaQuery.sizeOf(context).width < 600 ? 280 : 236,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(13),
         border: Border.all(
-          color: const Color(0xFFD8E8F5),
+          color: UcrColors.background,
         ),
-        color: const Color(0xFFF5FAFF),
+        color: UcrColors.white,
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -1231,7 +1251,7 @@ class _DashboardState extends State<Dashboard> {
                     const Text(
                       'B I E N V E N I D O (A)',
                       style: TextStyle(
-                        color: Color(0xFF496E9E),
+                        color: UcrColors.muted,
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
                       ),
@@ -1245,14 +1265,14 @@ class _DashboardState extends State<Dashboard> {
                         fontSize: 42,
                         height: 1.1,
                         fontWeight: FontWeight.w900,
-                        color: Color(0xFF07194D),
+                        color: UcrColors.blue,
                       ),
                     ),
                     const SizedBox(height: 9),
                     const Text(
                       'Sistema de declaración de horarios',
                       style: TextStyle(
-                        color: Color(0xFF41699C),
+                        color: UcrColors.muted,
                         fontSize: 19,
                       ),
                     ),
@@ -1261,7 +1281,7 @@ class _DashboardState extends State<Dashboard> {
                       'Gestioná tus declaraciones '
                       'de forma sencilla y segura.',
                       style: TextStyle(
-                        color: Color(0xFF5476A4),
+                        color: UcrColors.muted,
                         fontSize: 13,
                       ),
                     ),
@@ -1270,7 +1290,7 @@ class _DashboardState extends State<Dashboard> {
                       width: 55,
                       height: 3,
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2795F0),
+                        color: UcrColors.blue,
                         borderRadius: BorderRadius.circular(3),
                       ),
                     ),
@@ -1300,7 +1320,7 @@ class _DashboardState extends State<Dashboard> {
         child: Semantics(
           selected: selected,
           child: Material(
-            color: selected ? const Color(0xFF0B70C2) : Colors.transparent,
+            color: selected ? UcrColors.blue : Colors.transparent,
             borderRadius: BorderRadius.circular(9),
             child: InkWell(
               borderRadius: BorderRadius.circular(9),
@@ -1357,8 +1377,8 @@ class _DashboardState extends State<Dashboard> {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Color(0xFF064E95),
-            Color(0xFF073A77),
+            UcrColors.blue,
+            UcrColors.blue,
           ],
         ),
       ),
@@ -1467,7 +1487,7 @@ class _DashboardState extends State<Dashboard> {
                           ),
                         ),
                       const Divider(
-                        color: Color(0xFF3978AE),
+                        color: UcrColors.blue,
                         indent: 22,
                         endIndent: 22,
                       ),
@@ -1562,7 +1582,7 @@ class _DashboardState extends State<Dashboard> {
         title: Align(
           alignment: Alignment.centerLeft,
           child: Image.asset(
-            'assets/images/logo_declara_ucr.png',
+            'assets/images/firma_ucr_oficial.png',
             height: width < 600 ? 55 : 70,
             fit: BoxFit.contain,
             alignment: Alignment.centerLeft,
@@ -1587,7 +1607,7 @@ class _DashboardState extends State<Dashboard> {
                     Text(
                       _roleName,
                       style: const TextStyle(
-                        color: Color(0xFF5876A0),
+                        color: UcrColors.muted,
                         fontSize: 12,
                       ),
                     ),
@@ -1607,12 +1627,96 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
+      drawer: width < 920
+          ? Drawer(
+              child: SafeArea(
+                  child: ListView(children: [
+              const ListTile(
+                  title: Text('DeclaraUCR'),
+                  subtitle: Text('Universidad de Costa Rica')),
+              ListTile(
+                  leading: const Icon(Icons.person_outline),
+                  title: const Text('Mi perfil'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _openPersonalProfile();
+                  }),
+              ListTile(
+                  leading: const Icon(Icons.history),
+                  title: const Text('Seguimiento'),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    try {
+                      final stream = role == 'declarante'
+                          ? service.watchMine()
+                          : role == 'superior'
+                              ? service.watchAssigned()
+                              : service.watchAll();
+                      final list = await stream.first;
+                      if (mounted) await _chooseHistory(list);
+                    } catch (_) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text(
+                                'No se pudo cargar el seguimiento. Volvé a intentarlo.')));
+                      }
+                    }
+                  }),
+              if (role == 'admin')
+                ListTile(
+                    leading: const Icon(Icons.admin_panel_settings_outlined),
+                    title: const Text('Administración'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => const AdminPage()));
+                    }),
+              ListTile(
+                  leading: const Icon(Icons.help_outline),
+                  title: const Text('Ayuda'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _help();
+                  }),
+              ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Cerrar sesión'),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await FirebaseAuth.instance.signOut();
+                  }),
+            ])))
+          : null,
+      bottomNavigationBar: width < 920
+          ? NavigationBar(
+              selectedIndex: _section == 'inicio' ? 0 : 1,
+              onDestinationSelected: (index) {
+                if (index == 2) {
+                  _openPersonalProfile();
+                } else {
+                  setState(
+                      () => _section = index == 0 ? 'inicio' : 'declaraciones');
+                }
+              },
+              destinations: const [
+                NavigationDestination(
+                    icon: Icon(Icons.home_outlined), label: 'Inicio'),
+                NavigationDestination(
+                    icon: Icon(Icons.description_outlined), label: 'Trámites'),
+                NavigationDestination(
+                    icon: Icon(Icons.person_outline), label: 'Perfil')
+              ],
+            )
+          : null,
       floatingActionButton: FloatingActionButton(
-        tooltip: 'Ayuda',
-        onPressed: _help,
+        tooltip: role == 'declarante' ? 'Nueva declaración' : 'Ayuda',
+        onPressed: role == 'declarante'
+            ? () => Navigator.push(
+                context, MaterialPageRoute(builder: (_) => const EditorPage()))
+            : _help,
         backgroundColor: UcrColors.blue,
         foregroundColor: Colors.white,
-        child: const Icon(Icons.help_outline),
+        child: Icon(role == 'declarante' ? Icons.add : Icons.help_outline),
       ),
       body: loading
           ? const Center(
@@ -1682,7 +1786,7 @@ class _DashboardState extends State<Dashboard> {
                     vertical: 24,
                   ),
                   children: [
-                    if (width < 920) ...[
+                    if (width >= 600 && width < 920) ...[
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -1783,7 +1887,7 @@ class _DashboardState extends State<Dashboard> {
                                   'Total de declaraciones',
                                   list.length,
                                   Icons.description_outlined,
-                                  const Color(0xFF005DA4),
+                                  UcrColors.blue,
                                 ),
                               ),
                               SizedBox(
@@ -1792,7 +1896,7 @@ class _DashboardState extends State<Dashboard> {
                                   'Pendientes',
                                   pending,
                                   Icons.schedule_outlined,
-                                  const Color(0xFF2B91D4),
+                                  UcrColors.blue,
                                 ),
                               ),
                               SizedBox(
@@ -1801,7 +1905,7 @@ class _DashboardState extends State<Dashboard> {
                                   'Finalizadas',
                                   finished,
                                   Icons.check_circle_outline,
-                                  const Color(0xFF0087B9),
+                                  UcrColors.blue,
                                 ),
                               ),
                               SizedBox(
@@ -1810,7 +1914,7 @@ class _DashboardState extends State<Dashboard> {
                                   'Borrador',
                                   draft,
                                   Icons.edit_note_outlined,
-                                  const Color(0xFF416C9E),
+                                  UcrColors.muted,
                                 ),
                               ),
                             ],
@@ -1821,7 +1925,7 @@ class _DashboardState extends State<Dashboard> {
                       const Text(
                         'Accesos principales',
                         style: TextStyle(
-                          color: Color(0xFF07194D),
+                          color: UcrColors.blue,
                           fontSize: 24,
                           fontWeight: FontWeight.w800,
                         ),
@@ -1830,7 +1934,7 @@ class _DashboardState extends State<Dashboard> {
                       const Text(
                         'Seleccioná la opción que deseás realizar.',
                         style: TextStyle(
-                          color: Color(0xFF5476A4),
+                          color: UcrColors.muted,
                           fontSize: 14,
                         ),
                       ),
@@ -1926,7 +2030,7 @@ class _DashboardState extends State<Dashboard> {
                       const Text(
                         'Consulte, filtre y gestione sus trámites.',
                         style: TextStyle(
-                          color: Color(0xFF64748B),
+                          color: UcrColors.muted,
                           fontSize: 15,
                         ),
                       ),
@@ -1953,7 +2057,7 @@ class _DashboardState extends State<Dashboard> {
                                   'Total de declaraciones',
                                   list.length,
                                   Icons.description_outlined,
-                                  const Color(0xFF005DA4),
+                                  UcrColors.blue,
                                 ),
                               ),
                               SizedBox(
@@ -1962,7 +2066,7 @@ class _DashboardState extends State<Dashboard> {
                                   'Pendientes',
                                   pending,
                                   Icons.schedule_outlined,
-                                  const Color(0xFF248BD2),
+                                  UcrColors.blue,
                                 ),
                               ),
                               SizedBox(
@@ -1971,7 +2075,7 @@ class _DashboardState extends State<Dashboard> {
                                   'Finalizadas',
                                   finished,
                                   Icons.check_circle_outline,
-                                  const Color(0xFF426F9F),
+                                  UcrColors.muted,
                                 ),
                               ),
                             ],
@@ -2019,7 +2123,7 @@ class _DashboardState extends State<Dashboard> {
                                     '${filtered.length} de '
                                     '${list.length} declaraciones',
                                     style: const TextStyle(
-                                      color: Color(0xFF687789),
+                                      color: UcrColors.muted,
                                       fontSize: 12,
                                     ),
                                   ),
@@ -2175,7 +2279,7 @@ class _DashboardState extends State<Dashboard> {
         color: Colors.white,
         border: Border(
           top: BorderSide(
-            color: Color(0xFF005DA4),
+            color: UcrColors.blue,
             width: 2,
           ),
         ),
@@ -2187,7 +2291,7 @@ class _DashboardState extends State<Dashboard> {
             '© 2026 · DeclaraUCR · Universidad de Costa Rica',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Color(0xFF327FA5),
+              color: UcrColors.blue,
               fontSize: 14,
             ),
           ),
@@ -2196,7 +2300,7 @@ class _DashboardState extends State<Dashboard> {
             'Sistema de Declaración Jurada de Horarios',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Color(0xFF64748B),
+              color: UcrColors.muted,
               fontSize: 12,
             ),
           ),
@@ -2205,7 +2309,7 @@ class _DashboardState extends State<Dashboard> {
             'Versión 1.0.0',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Color(0xFF279D92),
+              color: UcrColors.success,
               fontSize: 12,
             ),
           ),
@@ -2249,16 +2353,6 @@ class _ObservationTools {
     'CONSULTA': 'horas de consulta',
     'PREPARACION': 'preparación',
   };
-
-  static const dayNames = <String>[
-    '',
-    'lunes',
-    'martes',
-    'miércoles',
-    'jueves',
-    'viernes',
-    'sábado',
-  ];
 
   static bool isTeaching(String position) {
     return teachingPositions.contains(position.trim());
@@ -2314,24 +2408,6 @@ class _ObservationTools {
     return null;
   }
 
-  static String? firstError(List<Appointment> jobs) {
-    for (var i = 0; i < jobs.length; i++) {
-      for (var j = 0; j < jobs[i].blocks.length; j++) {
-        final error = blockError(
-          jobs[i].blocks[j],
-          jobs[i].position,
-          false,
-        );
-
-        if (error != null) {
-          return 'Nombramiento ${i + 1}, bloque ${j + 1}: $error';
-        }
-      }
-    }
-
-    return null;
-  }
-
   static String blockDescription(TimeBlock block) {
     final code = (block.courseCode ?? '').trim();
 
@@ -2344,938 +2420,10 @@ class _ObservationTools {
 
     return (block.activityName ?? '').trim();
   }
-
-  static String ranges(List<TimeBlock> source) {
-    final blocks = List<TimeBlock>.of(source)
-      ..sort((a, b) {
-        final byDay = a.day.compareTo(b.day);
-
-        if (byDay != 0) return byDay;
-
-        final byStart = a.start.compareTo(b.start);
-
-        return byStart != 0 ? byStart : a.end.compareTo(b.end);
-      });
-
-    return blocks.map((block) {
-      final day = block.day >= 1 && block.day <= 6
-          ? dayNames[block.day]
-          : 'día sin especificar';
-
-      return '$day de ${block.start} a ${block.end}';
-    }).join(', ');
-  }
-
-  static String generate(
-    List<Appointment> jobs,
-    List<Appointment> external,
-  ) {
-    final lines = <String>[];
-
-    for (final job in jobs) {
-      if (isTeaching(job.position)) {
-        final courses = <String, Map<String, List<TimeBlock>>>{};
-
-        for (final block in job.blocks) {
-          final code = (block.courseCode ?? '').trim();
-
-          final course = code.isEmpty ? 'Curso sin especificar' : code;
-
-          final type = block.activityType ?? '';
-
-          courses.putIfAbsent(
-            course,
-            () => <String, List<TimeBlock>>{},
-          );
-
-          courses[course]!.putIfAbsent(type, () => <TimeBlock>[]).add(block);
-        }
-
-        final codes = courses.keys.toList()..sort();
-
-        for (final code in codes) {
-          final types = courses[code]!;
-          final parts = <String>[];
-
-          for (final type in activityLabels.keys) {
-            if (types.containsKey(type)) {
-              parts.add(
-                '${activityLabels[type]}: '
-                '${ranges(types[type]!)}',
-              );
-            }
-          }
-
-          for (final type in types.keys.where(
-            (type) => !activityLabels.containsKey(type),
-          )) {
-            parts.add(
-              'actividad sin especificar: '
-              '${ranges(types[type]!)}',
-            );
-          }
-
-          lines.add('$code: ${parts.join('; ')}.');
-        }
-      } else {
-        final activities = <String, List<TimeBlock>>{};
-
-        for (final block in job.blocks) {
-          final name = (block.activityName ?? '').trim();
-
-          final activity = name.isEmpty ? job.position : name;
-
-          activities.putIfAbsent(activity, () => <TimeBlock>[]).add(block);
-        }
-
-        for (final entry in activities.entries) {
-          lines.add(
-            '${entry.key}: ${ranges(entry.value)}.',
-          );
-        }
-      }
-    }
-
-    for (final job in external) {
-      if (job.blocks.isNotEmpty) {
-        lines.add(
-          '${job.position} en ${job.workplace}: '
-          '${ranges(job.blocks)}.',
-        );
-      }
-    }
-
-    return lines.join('\n');
-  }
 }
 
 // ============================================================
 // FORMULARIO DE DECLARACIÓN
-// ============================================================
-
-class EditorPage extends StatefulWidget {
-  final Declaration? existing;
-
-  const EditorPage({
-    super.key,
-    this.existing,
-  });
-
-  @override
-  State<EditorPage> createState() => _EditorPageState();
-}
-
-class _EditorPageState extends State<EditorPage> {
-  final service = DeclarationService();
-
-  final fields = List.generate(
-    8,
-    (_) => TextEditingController(),
-  );
-
-  final _formKey = GlobalKey<FormState>();
-
-  final jobs = <Appointment>[];
-  final external = <Appointment>[];
-
-  bool busy = false;
-  bool _profileLoaded = false;
-
-  String? _profileError;
-
-  // Los documentos anteriores conservan sus observaciones
-  // hasta que se modifiquen los horarios o se solicite regenerarlas.
-  bool _automaticObservations = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    final d = widget.existing;
-
-    _automaticObservations = d == null;
-
-    if (d != null) {
-      for (final pair in <(int, String)>[
-        (0, d.ownerName),
-        (1, d.identification),
-        (2, d.phone),
-        (3, d.email),
-        (4, d.unit),
-        (5, d.observations),
-        (6, d.periodId),
-        (7, d.superiorId),
-      ]) {
-        fields[pair.$1].text = pair.$2;
-      }
-
-      jobs.addAll(d.appointments);
-      external.addAll(d.externalJobs);
-    }
-
-    _syncObservations();
-    _loadPersonalProfile();
-  }
-
-  @override
-  void dispose() {
-    for (final controller in fields) {
-      controller.dispose();
-    }
-
-    super.dispose();
-  }
-
-  void _syncObservations() {
-    if (_automaticObservations) {
-      fields[5].text = _ObservationTools.generate(
-        jobs,
-        external,
-      );
-    }
-  }
-
-  void _activitiesChanged() {
-    _automaticObservations = true;
-    _syncObservations();
-  }
-
-  void _showMessage(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
-  }
-
-  Future<void> _loadPersonalProfile({
-    bool useCurrentProfile = false,
-  }) async {
-    setState(() {
-      _profileLoaded = false;
-      _profileError = null;
-    });
-
-    try {
-      final data = await ProfileService().load();
-
-      if (!mounted) return;
-
-      setState(() {
-        if (widget.existing == null || useCurrentProfile) {
-          fields[0].text = (data['name'] ?? '').toString();
-          fields[1].text = (data['identification'] ?? '').toString();
-          fields[2].text = (data['phone'] ?? '').toString();
-          fields[3].text = (data['email'] ?? '').toString();
-          fields[4].text = (data['unit'] ?? '').toString();
-        }
-
-        _profileLoaded = true;
-      });
-    } catch (_) {
-      if (!mounted) return;
-
-      setState(() {
-        _profileError = 'No se pudo cargar tu perfil. Revisá tu conexión '
-            'y volvé a intentarlo.';
-      });
-    }
-  }
-
-  Future<void> _editPersonalProfile() async {
-    await Navigator.push<void>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => const PersonalProfilePage(),
-      ),
-    );
-
-    if (!mounted) return;
-
-    await _loadPersonalProfile(
-      useCurrentProfile: true,
-    );
-  }
-
-  String? _validatePersonalField(
-    int index,
-    String? value,
-  ) {
-    switch (index) {
-      case 0:
-        return PersonalDataValidator.name(value);
-      case 1:
-        return PersonalDataValidator.identification(value);
-      case 2:
-        return PersonalDataValidator.phone(value);
-      case 3:
-        return PersonalDataValidator.email(value);
-      case 4:
-        return PersonalDataValidator.unit(value);
-      case 5:
-        return PersonalDataValidator.observations(value);
-      default:
-        return null;
-    }
-  }
-
-  Future<void> save() async {
-    if (busy) return;
-
-    if (!_profileLoaded) {
-      _showMessage(
-        'Esperá a que se carguen tus datos personales.',
-      );
-      return;
-    }
-
-    if (_automaticObservations) {
-      final activityError = _ObservationTools.firstError(jobs);
-
-      if (activityError != null) {
-        _showMessage(activityError);
-        return;
-      }
-
-      _syncObservations();
-    }
-
-    fields[0].text = PersonalDataValidator.normalizeName(
-      fields[0].text,
-    );
-
-    for (final index in [1, 2, 3, 4, 5]) {
-      fields[index].text = fields[index].text.trim();
-    }
-
-    if (!(_formKey.currentState?.validate() ?? false)) {
-      return;
-    }
-
-    setState(() => busy = true);
-
-    try {
-      final currentProfile = await ProfileService().load();
-
-      if (!mounted) return;
-
-      final registeredId = (currentProfile['identification'] ?? '').toString();
-
-      if (registeredId.isEmpty) {
-        throw StateError(
-          'Primero registrá y guardá tu cédula '
-          'en Mis datos personales.',
-        );
-      }
-
-      if (fields[1].text != registeredId) {
-        throw StateError(
-          'La cédula de la declaración no coincide con tu perfil. '
-          'Revisá tus datos antes de continuar.',
-        );
-      }
-
-      final p = await FirebaseFirestore.instance
-          .collection('periods')
-          .doc(fields[6].text.trim())
-          .get();
-
-      if (!mounted) return;
-
-      if (!p.exists || p.data()?['enabled'] != true) {
-        throw StateError(
-          'El período indicado no está habilitado.',
-        );
-      }
-
-      if (fields[0].text.trim().isEmpty ||
-          fields[1].text.trim().isEmpty ||
-          fields[7].text.trim().isEmpty ||
-          jobs.isEmpty) {
-        throw StateError(
-          'Completá los datos, seleccioná tu superior '
-          'y agregá al menos un nombramiento.',
-        );
-      }
-
-      final d = Declaration(
-        id: widget.existing?.id ?? '',
-        ownerId: FirebaseAuth.instance.currentUser!.uid,
-        ownerName: fields[0].text.trim(),
-        identification: fields[1].text.trim(),
-        phone: fields[2].text.trim(),
-        email: fields[3].text.trim(),
-        unit: fields[4].text.trim(),
-        periodId: fields[6].text.trim(),
-        superiorId: fields[7].text.trim(),
-        status: 'BORRADOR',
-        observations: fields[5].text.trim(),
-        version: widget.existing?.version ?? 1,
-        appointments: List.of(jobs),
-        externalJobs: List.of(external),
-        updatedAt: DateTime.now(),
-      );
-
-      await service.save(d);
-
-      if (mounted) {
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      if (mounted) {
-        _showMessage('$e');
-      }
-    } finally {
-      if (mounted) {
-        setState(() => busy = false);
-      }
-    }
-  }
-
-  InputDecoration _fieldStyle(
-    String label,
-    IconData icon,
-  ) {
-    return InputDecoration(
-      labelText: label,
-      prefixIcon: Icon(icon, color: UcrColors.blue),
-      filled: true,
-      fillColor: Colors.white,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      contentPadding: const EdgeInsets.symmetric(
-        horizontal: 16,
-        vertical: 17,
-      ),
-    );
-  }
-
-  Widget _input(
-    int index,
-    String label,
-    IconData icon, {
-    int maxLines = 1,
-  }) {
-    return TextFormField(
-      controller: fields[index],
-      readOnly: index >= 0 && index <= 4,
-      maxLines: maxLines,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (value) => _validatePersonalField(index, value),
-      keyboardType: index == 1
-          ? TextInputType.number
-          : index == 2
-              ? TextInputType.phone
-              : index == 3
-                  ? TextInputType.emailAddress
-                  : TextInputType.text,
-      decoration: _fieldStyle(
-        label,
-        icon,
-      ).copyWith(errorMaxLines: 3),
-    );
-  }
-
-  Widget _pair(Widget first, Widget second) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (constraints.maxWidth < 580) {
-          return Column(
-            children: [
-              first,
-              const SizedBox(height: 14),
-              second,
-            ],
-          );
-        }
-
-        return Row(
-          children: [
-            Expanded(child: first),
-            const SizedBox(width: 14),
-            Expanded(child: second),
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _heading(String title, IconData icon) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        children: [
-          Icon(icon, color: UcrColors.blue, size: 23),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              title,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w800,
-                color: Color(0xFF123663),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _panel(List<Widget> children) {
-    return Container(
-      padding: const EdgeInsets.all(22),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF5F9FE),
-        border: Border.all(
-          color: const Color(0xFFD7E8F7),
-        ),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: children,
-      ),
-    );
-  }
-
-  Widget _periodDropdown() {
-    return StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance
-          .collection('periods')
-          .where('enabled', isEqualTo: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return Text(
-            'No se pudieron consultar los períodos: '
-            '${snapshot.error}',
-            style: const TextStyle(color: Colors.red),
-          );
-        }
-
-        if (!snapshot.hasData) {
-          return const LinearProgressIndicator();
-        }
-
-        final docs = snapshot.data!.docs;
-        final current = fields[6].text.trim();
-
-        final available = docs.any(
-          (doc) => doc.id == current,
-        );
-
-        final items = <DropdownMenuItem<String>>[
-          if (current.isNotEmpty && !available)
-            DropdownMenuItem<String>(
-              value: current,
-              child: Text(
-                '$current (período anterior)',
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          for (final doc in docs)
-            DropdownMenuItem<String>(
-              value: doc.id,
-              child: Text(
-                (doc.data()['name'] ?? doc.data()['label'] ?? doc.id)
-                    .toString(),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-        ];
-
-        if (items.isEmpty) {
-          return const Text(
-            'No hay períodos activos disponibles.',
-          );
-        }
-
-        return DropdownButtonFormField<String>(
-          key: ValueKey('period-$current'),
-          initialValue: current.isEmpty ? null : current,
-          isExpanded: true,
-          decoration: _fieldStyle(
-            'Período activo',
-            Icons.event_available_outlined,
-          ),
-          hint: const Text('Seleccioná un período'),
-          items: items,
-          onChanged: widget.existing != null || busy
-              ? null
-              : (value) {
-                  setState(
-                    () => fields[6].text = value ?? '',
-                  );
-                },
-        );
-      },
-    );
-  }
-
-  Widget _observationsPanel() {
-    final error =
-        _automaticObservations ? _ObservationTools.firstError(jobs) : null;
-
-    return _panel([
-      _heading(
-        'Observaciones de la declaración',
-        Icons.notes_outlined,
-      ),
-      Text(
-        _automaticObservations
-            ? 'El resumen se genera a partir de los cursos, '
-                'actividades y horarios declarados.'
-            : 'Se conservan las observaciones del borrador anterior. '
-                'Al modificar sus horarios, el resumen se generará '
-                'automáticamente.',
-      ),
-      if (!_automaticObservations)
-        Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            onPressed: busy
-                ? null
-                : () {
-                    setState(_activitiesChanged);
-                  },
-            icon: const Icon(Icons.auto_awesome_outlined),
-            label: const Text('Generar desde los horarios'),
-          ),
-        ),
-      const SizedBox(height: 12),
-      TextFormField(
-        controller: fields[5],
-        readOnly: true,
-        minLines: 4,
-        maxLines: 12,
-        validator: PersonalDataValidator.observations,
-        decoration: _fieldStyle(
-          'Resumen de horarios',
-          Icons.description_outlined,
-        ).copyWith(
-          hintText: 'Agregá nombramientos para generar el resumen.',
-          errorMaxLines: 3,
-        ),
-      ),
-      if (error != null) ...[
-        const SizedBox(height: 10),
-        Text(
-          error,
-          style: const TextStyle(
-            color: Colors.deepOrange,
-          ),
-        ),
-      ],
-    ]);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: UcrColors.background,
-      appBar: AppBar(
-        backgroundColor: UcrColors.blue,
-        foregroundColor: Colors.white,
-        title: Text(
-          widget.existing == null ? 'Nueva declaración' : 'Editar declaración',
-        ),
-      ),
-      body: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 980),
-          child: Form(
-            key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.all(22),
-              children: [
-                const Text(
-                  'Datos de la declaración',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF123663),
-                  ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Completá la información y agregá tus horarios.',
-                  style: TextStyle(
-                    color: Color(0xFF55749A),
-                  ),
-                ),
-                const SizedBox(height: 22),
-                _panel([
-                  _heading(
-                    'Información personal',
-                    Icons.person_outline,
-                  ),
-                  if (!_profileLoaded && _profileError == null)
-                    const LinearProgressIndicator(),
-                  if (_profileError != null) ...[
-                    Text(
-                      _profileError!,
-                      style: const TextStyle(
-                        color: Colors.red,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: busy ? null : () => _loadPersonalProfile(),
-                      child: const Text(
-                        'Reintentar carga del perfil',
-                      ),
-                    ),
-                  ],
-                  const Text(
-                    'Los datos se completan desde tu perfil. '
-                    'Podés actualizarlos allí; la cédula '
-                    'guardada no se puede cambiar.',
-                  ),
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed:
-                          busy || !_profileLoaded ? null : _editPersonalProfile,
-                      icon: const Icon(
-                        Icons.manage_accounts_outlined,
-                      ),
-                      label: Text(
-                        widget.existing == null
-                            ? 'Completar o editar mis datos'
-                            : 'Editar perfil y usar sus datos actuales',
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  _pair(
-                    _input(
-                      0,
-                      'Nombre completo',
-                      Icons.person_outline,
-                    ),
-                    _input(
-                      1,
-                      'Identificación',
-                      Icons.credit_card_outlined,
-                    ),
-                  ),
-                  const SizedBox(height: 14),
-                  _pair(
-                    _input(
-                      3,
-                      'Correo electrónico',
-                      Icons.mail_outline,
-                    ),
-                    _input(
-                      2,
-                      'Teléfono',
-                      Icons.phone_outlined,
-                    ),
-                  ),
-                ]),
-                const SizedBox(height: 16),
-                _panel([
-                  _heading(
-                    'Información institucional',
-                    Icons.account_balance_outlined,
-                  ),
-                  _input(
-                    4,
-                    'Unidad académica o administrativa',
-                    Icons.apartment_outlined,
-                  ),
-                  const SizedBox(height: 14),
-                  _pair(
-                    _periodDropdown(),
-                    SuperiorSelector(
-                      controller: fields[7],
-                      enabled: widget.existing == null && !busy,
-                    ),
-                  ),
-                ]),
-                const SizedBox(height: 16),
-                section(
-                  'Nombramientos',
-                  jobs,
-                  false,
-                ),
-                const SizedBox(height: 12),
-                section(
-                  'Otras instituciones',
-                  external,
-                  true,
-                ),
-                const SizedBox(height: 16),
-                _observationsPanel(),
-                const SizedBox(height: 12),
-                Builder(
-                  builder: (ctx) {
-                    final result = ValidationService.validate(
-                      jobs,
-                      external,
-                    );
-
-                    return Card(
-                      elevation: 0,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Horas institucionales: '
-                              '${result.institutionalHours.toStringAsFixed(2)} / '
-                              '${result.expectedHours.toStringAsFixed(2)} '
-                              'esperadas',
-                            ),
-                            Text(
-                              'Horas externas: '
-                              '${result.externalHours.toStringAsFixed(2)}',
-                            ),
-                            ...result.errors.map(
-                              (e) => Text(
-                                '• $e',
-                                style: const TextStyle(
-                                  color: Colors.deepOrange,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: busy || !_profileLoaded ? null : save,
-                  icon: const Icon(Icons.save_outlined),
-                  label: Text(
-                    busy ? 'Guardando...' : 'Guardar borrador',
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<Appointment?> _openAppointment({
-    required bool isExternal,
-    Appointment? existing,
-  }) {
-    return Navigator.push<Appointment>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => AppointmentPage(
-          existing: existing,
-          institutionalWorkplace:
-              isExternal ? null : 'Universidad de Costa Rica',
-        ),
-      ),
-    );
-  }
-
-  Widget section(
-    String title,
-    List<Appointment> list,
-    bool isExternal,
-  ) {
-    return Card(
-      elevation: 0,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
-                FilledButton.tonalIcon(
-                  onPressed: busy
-                      ? null
-                      : () async {
-                          final appointment = await _openAppointment(
-                            isExternal: isExternal,
-                          );
-
-                          if (appointment != null && mounted) {
-                            setState(() {
-                              list.add(appointment);
-                              _activitiesChanged();
-                            });
-                          }
-                        },
-                  icon: const Icon(Icons.add),
-                  label: const Text('Agregar'),
-                ),
-              ],
-            ),
-            for (var i = 0; i < list.length; i++)
-              ListTile(
-                title: Text(list[i].workplace),
-                subtitle: Text(
-                  '${list[i].position} · '
-                  '${list[i].blocks.length} bloques',
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      tooltip: 'Editar',
-                      icon: const Icon(Icons.edit_outlined),
-                      onPressed: busy
-                          ? null
-                          : () async {
-                              final index = i;
-                              final original = list[index];
-
-                              final edited = await _openAppointment(
-                                isExternal: isExternal,
-                                existing: original,
-                              );
-
-                              if (edited != null &&
-                                  mounted &&
-                                  index < list.length &&
-                                  identical(list[index], original)) {
-                                setState(() {
-                                  list[index] = edited;
-                                  _activitiesChanged();
-                                });
-                              }
-                            },
-                    ),
-                    IconButton(
-                      tooltip: 'Eliminar',
-                      icon: const Icon(Icons.delete_outline),
-                      onPressed: busy
-                          ? null
-                          : () {
-                              setState(() {
-                                list.removeAt(i);
-                                _activitiesChanged();
-                              });
-                            },
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ============================================================
-// FORMULARIO DE NOMBRAMIENTOS Y BLOQUES
 // ============================================================
 
 class AppointmentPage extends StatefulWidget {
@@ -3283,11 +2431,15 @@ class AppointmentPage extends StatefulWidget {
 
   // Tiene valor para UCR y es null para otras instituciones.
   final String? institutionalWorkplace;
+  final bool allowIncomplete;
+  final int? initialBlockIndex;
 
   const AppointmentPage({
     super.key,
     this.existing,
     this.institutionalWorkplace,
+    this.allowIncomplete = false,
+    this.initialBlockIndex,
   });
 
   @override
@@ -3379,6 +2531,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
     if (_institutional && !_requiresCourse) {
       _activityName.text = f[1].text;
     }
+    final index = widget.initialBlockIndex;
+    if (index != null && index >= 0 && index < blocks.length) _editBlock(index);
   }
 
   @override
@@ -3417,6 +2571,11 @@ class _AppointmentPageState extends State<AppointmentPage> {
   }
 
   Widget _positionField() {
+    if (!_institutional) {
+      return TextField(
+          controller: f[1], decoration: _decoration('Cargo o categoría'));
+    }
+
     final previous = f[1].text.trim();
     final available = _positions.contains(previous);
 
@@ -3613,7 +2772,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
       context: context,
       barrierDismissible: true,
       builder: (dialogContext) => Dialog(
-        backgroundColor: const Color(0xFF1D1D20),
+        backgroundColor: UcrColors.text,
         insetPadding: const EdgeInsets.symmetric(
           horizontal: 20,
           vertical: 20,
@@ -3648,7 +2807,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                           Container(
                             height: 44,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF39393F),
+                              color: UcrColors.text,
                               borderRadius: BorderRadius.circular(11),
                             ),
                           ),
@@ -3769,7 +2928,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
   }
 
   void _addOrUpdateBlock() {
-    if (!_positions.contains(f[1].text.trim())) {
+    if ((_institutional && !_positions.contains(f[1].text.trim())) ||
+        (!_institutional && f[1].text.trim().isEmpty)) {
       _showMessage(
         'Primero seleccioná el cargo o categoría.',
       );
@@ -3841,6 +3001,26 @@ class _AppointmentPageState extends State<AppointmentPage> {
   }
 
   void _saveAppointment() {
+    if (widget.allowIncomplete && _editingBlock == null) {
+      final fraction = _institutional && _workloadFraction != 'LEGACY'
+          ? _workloadFraction
+          : null;
+      Navigator.pop(
+          context,
+          Appointment(
+            workplace: widget.institutionalWorkplace ?? f[0].text.trim(),
+            position: f[1].text.trim(),
+            startDate: f[3].text,
+            endDate: noEndDate ? 'No aplica' : f[4].text,
+            expectedHours: fraction == null
+                ? (double.tryParse(f[2].text) ?? 0)
+                : _workloadHours[fraction]!,
+            workloadFraction: fraction,
+            blocks: List.of(blocks),
+          ));
+      return;
+    }
+
     if (_editingBlock != null) {
       _showMessage(
         'Actualizá el bloque que estás editando '
@@ -3849,7 +3029,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
       return;
     }
 
-    if (!_positions.contains(f[1].text.trim())) {
+    if ((_institutional && !_positions.contains(f[1].text.trim())) ||
+        (!_institutional && f[1].text.trim().isEmpty)) {
       _showMessage(
         'Seleccioná un cargo de la lista.',
       );
@@ -3965,7 +3146,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
       return const SizedBox.shrink();
     }
 
-    if (!_positions.contains(f[1].text.trim())) {
+    if ((_institutional && !_positions.contains(f[1].text.trim())) ||
+        (!_institutional && f[1].text.trim().isEmpty)) {
       return const Padding(
         padding: EdgeInsets.only(bottom: 12),
         child: Text(
@@ -4265,7 +3447,7 @@ class _WelcomeCurvePainter extends CustomPainter {
     canvas.drawPath(
       outerPath,
       Paint()
-        ..color = const Color(0xFF4BA9ED).withValues(
+        ..color = UcrColors.muted.withValues(
           alpha: 0.70,
         ),
     );
@@ -4287,7 +3469,7 @@ class _WelcomeCurvePainter extends CustomPainter {
     canvas.drawPath(
       middlePath,
       Paint()
-        ..color = const Color(0xFFB7E3FF).withValues(
+        ..color = UcrColors.border.withValues(
           alpha: 0.96,
         ),
     );
@@ -4313,9 +3495,9 @@ class _WelcomeCurvePainter extends CustomPainter {
           begin: Alignment.centerLeft,
           end: Alignment.centerRight,
           colors: [
-            Color(0xFFF5FAFF),
-            Color(0xFFE8F6FF),
-            Color(0xFFD4EDFF),
+            UcrColors.white,
+            UcrColors.background,
+            UcrColors.background,
           ],
         ).createShader(
           Offset.zero & size,

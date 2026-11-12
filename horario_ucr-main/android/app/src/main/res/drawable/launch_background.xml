@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <item android:drawable="@color/ucr_cyan" />
+  <item android:width="108dp" android:height="108dp" android:gravity="center" android:drawable="@drawable/declara_icon" />
+  <item android:width="240dp" android:height="80dp" android:gravity="bottom|center_horizontal" android:bottom="32dp">
+    <bitmap android:gravity="fill" android:src="@drawable/firma_promocional" />
+  </item>
+</layer-list>

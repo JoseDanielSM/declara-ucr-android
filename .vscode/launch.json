@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "DeclaraUCR Android local",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/horario_ucr-main",
+      "program": "lib/main.dart",
+      "deviceId": "emulator-5554",
+      "flutterMode": "debug",
+      "preLaunchTask": "DeclaraUCR: iniciar Android",
+      "args": [
+        "--disable-dds",
+        "--dart-define=USE_FIREBASE_EMULATORS=true",
+        "--dart-define=FIREBASE_EMULATOR_HOST=10.0.2.2",
+        "--dart-define=NOTIFICATIONS_WS_URL=ws://10.0.2.2:8080"
+      ]
+    },
+    {
+      "name": "DeclaraUCR web local",
+      "type": "dart",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/horario_ucr-main",
+      "program": "lib/main.dart",
+      "deviceId": "chrome",
+      "args": ["--web-hostname", "127.0.0.1", "--web-port", "7358", "--dart-define=USE_FIREBASE_EMULATORS=true", "--dart-define=NOTIFICATIONS_WS_URL=ws://127.0.0.1:8080"]
+    }
+  ]
+}

@@ -36,3 +36,5 @@ npm-debug.log*
 # Entorno local de prueba
 .local/
 *-debug.log
+output/
+*.apk

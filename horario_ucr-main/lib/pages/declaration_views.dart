@@ -5,9 +5,10 @@ import '../models/declaration.dart';
 import '../services/declaration_service.dart';
 import '../services/declaration_observations.dart';
 import '../theme/ucr_colors.dart';
+import 'declaration_editor.dart' show intervalDuration;
 
-const _navy = Color(0xFF073A77);
-const _softBlue = Color(0xFFEDF8FF);
+const _navy = UcrColors.blue;
+const _softBlue = UcrColors.white;
 const _days = [
   '',
   'Lunes',
@@ -189,7 +190,7 @@ class DeclarationDetailPage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '${block.start} – ${block.end}',
+                    '${block.start} – ${block.end} · ${intervalDuration(block)}',
                     style: const TextStyle(color: UcrColors.text),
                   ),
                 ],
@@ -375,15 +376,17 @@ class DeclarationHistoryPage extends StatelessWidget {
               StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
                 stream: DeclarationService().timeline(id),
                 builder: (context, snapshot) {
-                  if (snapshot.hasError)
+                  if (snapshot.hasError) {
                     return const _Message(
                       'No se pudo cargar el historial. Revisá tu conexión y los permisos de la cuenta.',
                     );
-                  if (!snapshot.hasData)
+                  }
+                  if (!snapshot.hasData) {
                     return const Padding(
                       padding: EdgeInsets.all(32),
                       child: Center(child: CircularProgressIndicator()),
                     );
+                  }
                   final events = snapshot.data!.docs.reversed.toList();
                   final returned = latestDeclarationReturn(
                     events.map((event) => event.data()).toList(),
@@ -622,17 +625,20 @@ class _DeclarationReader extends StatelessWidget {
             .doc(id)
             .snapshots(),
         builder: (context, snapshot) {
-          if (snapshot.hasError)
+          if (snapshot.hasError) {
             return const _Message(
               'No se pudo cargar la declaración. Revisá tu conexión y los permisos de esta cuenta.',
             );
-          if (!snapshot.hasData)
+          }
+          if (!snapshot.hasData) {
             return const Padding(
               padding: EdgeInsets.all(40),
               child: Center(child: CircularProgressIndicator()),
             );
-          if (!snapshot.data!.exists)
+          }
+          if (!snapshot.data!.exists) {
             return const _Message('La declaración ya no está disponible.');
+          }
           return builder(Declaration.fromDoc(snapshot.data!));
         },
       );
@@ -660,7 +666,7 @@ class _Header extends StatelessWidget {
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF064E95), _navy],
+            colors: [UcrColors.blue, _navy],
           ),
         ),
         child: Column(
@@ -693,7 +699,7 @@ class _Header extends StatelessWidget {
             const SizedBox(height: 9),
             Text(
               subtitle,
-              style: const TextStyle(color: Color(0xFFD8EBFF), height: 1.5),
+              style: const TextStyle(color: UcrColors.background, height: 1.5),
             ),
             if (footer != null) ...[const SizedBox(height: 16), footer!],
           ],
@@ -798,9 +804,9 @@ class _StatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = switch (status) {
-      'FINALIZADA' => const Color(0xFF167E73),
-      'DEVUELTA' => const Color(0xFF926100),
-      'ANULADA' => const Color(0xFFAD3B45),
+      'FINALIZADA' => UcrColors.success,
+      'DEVUELTA' => UcrColors.warning,
+      'ANULADA' => UcrColors.warning,
       _ => _navy,
     };
     return Container(

@@ -1,0 +1,36 @@
+{
+  "generatedAt": "2026-11-12T01:26:02.706Z",
+  "baselineCommit": "43f8561",
+  "apk": {
+    "file": "output/android/DeclaraUCR-local-debug.apk",
+    "entrypoint": "lib/main.dart",
+    "applicationId": "cr.ac.ucr.declaraucr",
+    "debug": true,
+    "bytes": 243265385,
+    "sha256": "44cfde44b030faaf5d8cdd1493539daac3160ab3a92fd82354cdb4c62e4e0964"
+  },
+  "environment": {
+    "firebaseProject": "demo-declaraucr-local",
+    "android": "Pixel 6 / API 36 / emulator-5554",
+    "web": "http://127.0.0.1:7357"
+  },
+  "checks": {
+    "flutterAnalyze": "No issues found",
+    "flutterTestsPassed": 110,
+    "backendValidatorPassed": 67,
+    "draftCasesPassed": 13,
+    "localWorkflowPassed": 12,
+    "androidWorkflowCompleted": true,
+    "coldRestartCompleted": true,
+    "requiredFieldErrorsVisible": true,
+    "webBuild": true,
+    "apkBuild": true,
+    "apkInstalled": true,
+    "pdfPages": 2,
+    "videoSeconds": 63.1
+  },
+  "documents": {
+    "fullWorkflow": "okMB2DYC7BOJvNwXxGid",
+    "recoveredDraft": "2uJGiN5kwBA7Su9Q71Ng"
+  }
+}

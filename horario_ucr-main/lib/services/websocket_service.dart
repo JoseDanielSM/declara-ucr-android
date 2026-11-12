@@ -3,11 +3,12 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'local_environment.dart';
 
 class WebSocketService {
   static const serverUrl = String.fromEnvironment(
     'NOTIFICATIONS_WS_URL',
-    defaultValue: 'ws://localhost:8080',
+    defaultValue: 'ws://${LocalEnvironment.host}:8080',
   );
 
   final _events = StreamController<Map<String, dynamic>>.broadcast();

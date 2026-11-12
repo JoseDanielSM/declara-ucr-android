@@ -114,8 +114,10 @@ class AdminPage extends StatelessWidget {
                   final isSelf = doc.id == currentUid;
                   return Card(
                     child: ListTile(
-                      title: Text(data['name']?.toString() ?? 'Sin nombre'),
-                      subtitle: Text(data['email']?.toString() ?? ''),
+                      title: Text(data['name']?.toString() ?? 'Sin nombre',
+                          maxLines: 2, overflow: TextOverflow.ellipsis),
+                      subtitle: Text(data['email']?.toString() ?? '',
+                          maxLines: 1, overflow: TextOverflow.ellipsis),
                       trailing: DropdownButton<String>(
                         value: roles.contains(currentRole) ? currentRole : null,
                         hint: const Text('Rol'),

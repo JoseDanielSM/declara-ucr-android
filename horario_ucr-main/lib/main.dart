@@ -7,6 +7,8 @@ import 'services/personal_data_validator.dart';
 import 'services/local_environment.dart';
 import 'firebase_options.dart';
 import 'pages/dashboard.dart';
+import 'theme/ucr_theme.dart';
+import 'theme/ucr_colors.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,17 +26,16 @@ Future<void> main() async {
     runApp(
       MaterialApp(
         debugShowCheckedModeBanner: false,
+        theme: UcrTheme.light,
         home: Scaffold(
           body: Center(
             child: Padding(
               padding: const EdgeInsets.all(24),
               child: SelectableText(
-                'Firebase todavía no está configurado.\n\n'
-                'Desde esta carpeta ejecutá:\n'
-                'flutterfire configure '
-                '--project=declarahorario-ucr-cff7a '
-                '--platforms=web\n\n'
-                'Error: $error',
+                'No se pudo iniciar DeclaraUCR.\n\n'
+                'Abrí el acceso Iniciar-DeclaraUCR-Android de esta PC '
+                'para preparar los servicios y volvé a intentarlo.\n\n'
+                'Detalle: $error',
                 textAlign: TextAlign.center,
               ),
             ),
@@ -63,27 +64,11 @@ class DeclaraApp extends StatelessWidget {
           ? Banner(
               message: 'PRUEBA LOCAL',
               location: BannerLocation.topEnd,
-              color: const Color(0xFF244D72),
+              color: UcrColors.blue,
               child: child!,
             )
           : child!,
-      theme: ThemeData(
-        useMaterial3: true,
-        fontFamily: 'MyriadPro',
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF244D72),
-        ),
-        scaffoldBackgroundColor: const Color(0xFFF3F6FA),
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 14,
-            vertical: 13,
-          ),
-        ),
-      ),
+      theme: UcrTheme.light,
       locale: const Locale('es', 'ES'),
       supportedLocales: const [
         Locale('es', 'ES'),
@@ -410,18 +395,18 @@ class _LoginPageState extends State<LoginPage> {
       {Widget? suffix}) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Color(0xFF8399BA)),
-      prefixIcon: Icon(icon, color: const Color(0xFF103C80)),
+      hintStyle: const TextStyle(color: UcrColors.muted),
+      prefixIcon: Icon(icon, color: UcrColors.blue),
       suffixIcon: suffix,
       filled: true,
-      fillColor: const Color(0xFFF8FBFF),
+      fillColor: UcrColors.white,
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFFBBD6F6)),
+        borderSide: const BorderSide(color: UcrColors.border),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Color(0xFF0076EF), width: 1.6),
+        borderSide: const BorderSide(color: UcrColors.blue, width: 1.6),
       ),
     );
   }
@@ -434,203 +419,216 @@ class _LoginPageState extends State<LoginPage> {
               style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w700,
-                color: Color(0xFF092D6D),
+                color: UcrColors.blue,
               )),
         ),
       );
 
   Widget _authCard() {
-    const navy = Color(0xFF092D6D);
+    const navy = UcrColors.blue;
     return Container(
       width: 490,
-      padding: const EdgeInsets.symmetric(horizontal: 34, vertical: 32),
+      padding: EdgeInsets.symmetric(
+          horizontal: MediaQuery.sizeOf(context).width < 600 ? 20 : 34,
+          vertical: 32),
       decoration: BoxDecoration(
         color: Colors.white.withValues(alpha: 0.96),
         borderRadius: BorderRadius.circular(24),
         boxShadow: const [
           BoxShadow(
-              color: Color(0x180A3E79), blurRadius: 32, offset: Offset(0, 12))
+              color: UcrColors.shadow, blurRadius: 32, offset: Offset(0, 12))
         ],
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-              child: Image.asset(
-            'assets/images/logo_declara_ucr.png',
-            height: 76,
-            fit: BoxFit.contain,
-            errorBuilder: (_, __, ___) => const Text('DeclaraUCR',
-                style: TextStyle(
-                    color: navy, fontSize: 30, fontWeight: FontWeight.bold)),
-          )),
-          const SizedBox(height: 28),
-          Text(isRegistering ? 'Crear cuenta' : 'Iniciar sesión',
-              style: const TextStyle(
-                  fontSize: 28, color: navy, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 4),
-          Text(
-              isRegistering
-                  ? 'Completá tus datos para registrarte.'
-                  : 'Ingresá tus credenciales para continuar.',
-              style: const TextStyle(fontSize: 15, color: Color(0xFF758CB0))),
-          const SizedBox(height: 24),
-          if (isRegistering) ...[
-            _label('Nombre y apellidos completos'),
-            TextField(
-              controller: nameController,
-              textCapitalization: TextCapitalization.words,
-              decoration:
-                  _fieldDecoration('Nombre y apellidos', Icons.person_outline),
-            ),
-            const SizedBox(height: 17),
-          ],
-          _label('Correo electrónico'),
-          TextField(
-            controller: emailController,
-            keyboardType: TextInputType.emailAddress,
-            autofillHints: const [AutofillHints.email],
-            decoration:
-                _fieldDecoration('nombre@ucr.ac.cr', Icons.mail_outline),
-          ),
-          const SizedBox(height: 17),
-          _label('Contraseña'),
-          TextField(
-            controller: passwordController,
-            obscureText: !showPassword,
-            enableSuggestions: false,
-            autocorrect: false,
-            textInputAction: TextInputAction.next,
-            decoration: _fieldDecoration(
-              'Ingresá tu contraseña',
-              Icons.lock_outline,
-              suffix: IconButton(
-                tooltip:
-                    showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña',
-                onPressed: () => setState(() => showPassword = !showPassword),
-                icon: Icon(
-                    showPassword
-                        ? Icons.visibility_off_outlined
-                        : Icons.visibility_outlined,
-                    color: navy),
+      child: Material(
+          type: MaterialType.transparency,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                  child: Image.asset(
+                'assets/images/firma_ucr_oficial.png',
+                height: 76,
+                fit: BoxFit.contain,
+                errorBuilder: (_, __, ___) => const Text('DeclaraUCR',
+                    style: TextStyle(
+                        color: navy,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold)),
+              )),
+              const SizedBox(height: 28),
+              Text(isRegistering ? 'Crear cuenta' : 'Iniciar sesión',
+                  style: const TextStyle(
+                      fontSize: 28, color: navy, fontWeight: FontWeight.w800)),
+              const SizedBox(height: 4),
+              Text(
+                  isRegistering
+                      ? 'Completá tus datos para registrarte.'
+                      : 'Ingresá tus credenciales para continuar.',
+                  style: const TextStyle(fontSize: 15, color: UcrColors.muted)),
+              const SizedBox(height: 24),
+              if (isRegistering) ...[
+                _label('Nombre y apellidos completos'),
+                TextField(
+                  controller: nameController,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: _fieldDecoration(
+                      'Nombre y apellidos', Icons.person_outline),
+                ),
+                const SizedBox(height: 17),
+              ],
+              _label('Correo electrónico'),
+              TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                autofillHints: const [AutofillHints.email],
+                decoration:
+                    _fieldDecoration('nombre@ucr.ac.cr', Icons.mail_outline),
               ),
-            ),
-          ),
-          if (isRegistering) ...[
-            const SizedBox(height: 17),
-            _label('Confirmar contraseña'),
-            TextField(
-              controller: confirmPasswordController,
-              obscureText: !showConfirmPassword,
-              enableSuggestions: false,
-              autocorrect: false,
-              textInputAction: TextInputAction.done,
-              onSubmitted: (_) => submit(),
-              decoration: _fieldDecoration(
-                'Ingresá nuevamente tu contraseña',
-                Icons.lock_outline,
-                suffix: IconButton(
-                  tooltip: showConfirmPassword
-                      ? 'Ocultar confirmación de contraseña'
-                      : 'Mostrar confirmación de contraseña',
-                  onPressed: () {
-                    setState(() {
-                      showConfirmPassword = !showConfirmPassword;
-                    });
-                  },
-                  icon: Icon(
-                    showConfirmPassword
-                        ? Icons.visibility_off_outlined
-                        : Icons.visibility_outlined,
-                    color: navy,
+              const SizedBox(height: 17),
+              _label('Contraseña'),
+              TextField(
+                controller: passwordController,
+                obscureText: !showPassword,
+                enableSuggestions: false,
+                autocorrect: false,
+                textInputAction: TextInputAction.next,
+                decoration: _fieldDecoration(
+                  'Ingresá tu contraseña',
+                  Icons.lock_outline,
+                  suffix: IconButton(
+                    tooltip: showPassword
+                        ? 'Ocultar contraseña'
+                        : 'Mostrar contraseña',
+                    onPressed: () =>
+                        setState(() => showPassword = !showPassword),
+                    icon: Icon(
+                        showPassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        color: navy),
                   ),
                 ),
               ),
-            ),
-          ],
-          if (!isRegistering) ...[
-            const SizedBox(height: 12),
-            Row(children: [
-              Checkbox(
-                value: rememberEmail,
-                visualDensity: VisualDensity.compact,
-                activeColor: const Color(0xFF0077ED),
-                onChanged: (value) =>
-                    setState(() => rememberEmail = value ?? false),
-              ),
-              const Expanded(
-                  child: Text('Conservar correo al cambiar de pantalla',
-                      style: TextStyle(color: navy, fontSize: 13))),
-              TextButton(
-                  onPressed: isLoading ? null : resetPassword,
-                  child: const Text('¿Olvidaste tu contraseña?',
-                      style: TextStyle(
-                          fontSize: 12.5, fontWeight: FontWeight.w600))),
-            ]),
-          ],
-          if (errorMessage != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Text(errorMessage!,
-                  style: const TextStyle(color: Colors.red)),
-            ),
-          const SizedBox(height: 19),
-          SizedBox(
-              height: 52,
-              child: FilledButton(
-                style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF0069D5),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30)),
+              if (isRegistering) ...[
+                const SizedBox(height: 17),
+                _label('Confirmar contraseña'),
+                TextField(
+                  controller: confirmPasswordController,
+                  obscureText: !showConfirmPassword,
+                  enableSuggestions: false,
+                  autocorrect: false,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => submit(),
+                  decoration: _fieldDecoration(
+                    'Ingresá nuevamente tu contraseña',
+                    Icons.lock_outline,
+                    suffix: IconButton(
+                      tooltip: showConfirmPassword
+                          ? 'Ocultar confirmación de contraseña'
+                          : 'Mostrar confirmación de contraseña',
+                      onPressed: () {
+                        setState(() {
+                          showConfirmPassword = !showConfirmPassword;
+                        });
+                      },
+                      icon: Icon(
+                        showConfirmPassword
+                            ? Icons.visibility_off_outlined
+                            : Icons.visibility_outlined,
+                        color: navy,
+                      ),
+                    ),
+                  ),
                 ),
-                onPressed: isLoading ? null : submit,
-                child: isLoading
-                    ? const SizedBox(
-                        width: 22,
-                        height: 22,
-                        child: CircularProgressIndicator(
-                            color: Colors.white, strokeWidth: 2))
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                            Text(
-                                isRegistering
-                                    ? 'Crear cuenta'
-                                    : 'Ingresar al sistema',
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
-                            const SizedBox(width: 15),
-                            const Icon(Icons.arrow_forward),
-                          ]),
-              )),
-          const SizedBox(height: 22),
-          Row(children: [
-            const Expanded(child: Divider(color: Color(0xFFCCE0F7))),
-            Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                child: Text(
-                    isRegistering
-                        ? '¿Ya tenés una cuenta?'
-                        : '¿No tenés una cuenta?',
-                    style: const TextStyle(fontSize: 13, color: navy))),
-            const Expanded(child: Divider(color: Color(0xFFCCE0F7))),
-          ]),
-          const SizedBox(height: 15),
-          OutlinedButton(
-            onPressed: isLoading ? null : toggleAuthMode,
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size(double.infinity, 50),
-              side: const BorderSide(color: Color(0xFF0076EF), width: 1.5),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
-            child: Text(isRegistering ? 'Iniciar sesión' : 'Registrarse',
-                style: const TextStyle(
-                    color: Color(0xFF0071E8), fontWeight: FontWeight.bold)),
-          ),
-        ],
-      ),
+              ],
+              if (!isRegistering) ...[
+                const SizedBox(height: 12),
+                CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    value: rememberEmail,
+                    activeColor: UcrColors.blue,
+                    onChanged: (value) =>
+                        setState(() => rememberEmail = value ?? false),
+                    title: const Text('Conservar correo al cambiar de pantalla',
+                        style: TextStyle(color: navy, fontSize: 16))),
+                Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                        onPressed: isLoading ? null : resetPassword,
+                        child: const Text('¿Olvidaste tu contraseña?',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600)))),
+              ],
+              if (errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Text(errorMessage!,
+                      style: const TextStyle(color: Colors.red)),
+                ),
+              const SizedBox(height: 19),
+              ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: 52),
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: UcrColors.blue,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30)),
+                    ),
+                    onPressed: isLoading ? null : submit,
+                    child: isLoading
+                        ? const SizedBox(
+                            width: 22,
+                            height: 22,
+                            child: CircularProgressIndicator(
+                                color: Colors.white, strokeWidth: 2))
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                                Flexible(
+                                    child: Text(
+                                        isRegistering
+                                            ? 'Crear cuenta'
+                                            : 'Ingresar al sistema',
+                                        style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold))),
+                                const SizedBox(width: 15),
+                                const Icon(Icons.arrow_forward),
+                              ]),
+                  )),
+              const SizedBox(height: 22),
+              Row(children: [
+                const Expanded(child: Divider(color: UcrColors.border)),
+                Flexible(
+                    flex: 6,
+                    child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                            isRegistering
+                                ? '¿Ya tenés una cuenta?'
+                                : '¿No tenés una cuenta?',
+                            textAlign: TextAlign.center,
+                            style:
+                                const TextStyle(fontSize: 16, color: navy)))),
+                const Expanded(child: Divider(color: UcrColors.border)),
+              ]),
+              const SizedBox(height: 15),
+              OutlinedButton(
+                onPressed: isLoading ? null : toggleAuthMode,
+                style: OutlinedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                  side: const BorderSide(color: UcrColors.blue, width: 1.5),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text(isRegistering ? 'Iniciar sesión' : 'Registrarse',
+                    style: const TextStyle(
+                        color: UcrColors.blue, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          )),
     );
   }
 
@@ -644,7 +642,11 @@ class _LoginPageState extends State<LoginPage> {
             child: DecoratedBox(
                 decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFD7EFFF), Color(0xFFF8FCFF), Color(0xFFE5F4FF)],
+            colors: [
+              UcrColors.background,
+              UcrColors.white,
+              UcrColors.background
+            ],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -726,20 +728,20 @@ class _LoginPageState extends State<LoginPage> {
                         children: const [
                           SizedBox(
                               width: 58,
-                              child: Divider(
-                                  color: Color(0xFF0074EC), thickness: 4)),
+                              child:
+                                  Divider(color: UcrColors.blue, thickness: 4)),
                           SizedBox(height: 18),
                           Text('Sistema de\ndeclaración de horarios',
                               style: TextStyle(
                                   fontSize: 31,
                                   fontWeight: FontWeight.w800,
-                                  color: Color(0xFF082C70),
+                                  color: UcrColors.blue,
                                   height: 1.14)),
                           SizedBox(height: 14),
                           Text(
                               'Gestión universitaria eficiente\nal servicio de la comunidad.',
                               style: TextStyle(
-                                  fontSize: 20, color: Color(0xFF738AAE))),
+                                  fontSize: 20, color: UcrColors.muted)),
                         ],
                       ),
                     )),

@@ -1,0 +1,5 @@
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/ucr_cyan" />
+    <foreground android:drawable="@drawable/declara_icon" />
+    <monochrome android:drawable="@drawable/declara_icon" />
+</adaptive-icon>

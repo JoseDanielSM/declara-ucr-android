@@ -12,14 +12,15 @@ Appointment job({
   List<TimeBlock> blocks = const [
     TimeBlock(day: 1, start: '08:00', end: '12:00'),
   ],
-}) => Appointment(
-  workplace: workplace,
-  position: position,
-  startDate: startDate,
-  endDate: endDate,
-  expectedHours: expected,
-  blocks: blocks,
-);
+}) =>
+    Appointment(
+      workplace: workplace,
+      position: position,
+      startDate: startDate,
+      endDate: endDate,
+      expectedHours: expected,
+      blocks: blocks,
+    );
 
 void must(bool condition, String message) {
   if (!condition) throw StateError(message);

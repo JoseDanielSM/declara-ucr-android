@@ -1,0 +1,8 @@
+<resources>
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowSplashScreenBackground">@color/ucr_cyan</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/declara_icon</item>
+        <item name="android:windowSplashScreenBrandingImage">@drawable/firma_promocional</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

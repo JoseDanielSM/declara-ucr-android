@@ -91,6 +91,11 @@ Future<void> submit(WidgetTester tester) async {
 }
 
 Future<void> choosePosition(WidgetTester tester, String position) async {
+  if (field('Cargo o categoría').evaluate().isNotEmpty) {
+    await tester.enterText(field('Cargo o categoría'), position);
+    await tester.pumpAndSettle();
+    return;
+  }
   final dropdown = find.byWidgetPredicate(
     (widget) =>
         widget is DropdownButtonFormField<String> &&

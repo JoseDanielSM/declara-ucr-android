@@ -75,8 +75,9 @@ String generateDeclarationSummary(Map<String, dynamic> declaration) {
         final types = courses[code]!;
         final parts = <String>[];
         for (final type in labels.keys) {
-          if (types.containsKey(type))
+          if (types.containsKey(type)) {
             parts.add('${labels[type]}: ${ranges(types[type]!)}');
+          }
         }
         for (final type in types.keys.where(
           (type) => !labels.containsKey(type),
@@ -116,11 +117,16 @@ String generateDeclarationSummary(Map<String, dynamic> declaration) {
 /// Conserva las observaciones guardadas; reconstruye solo si estaban vacías.
 String declarationPdfObservations(Map<String, dynamic> declaration) {
   final saved = declaration['observations']?.toString().trim() ?? '';
-  if (saved.isNotEmpty) return saved;
-  final summary = generateDeclarationSummary(declaration);
-  return summary.isEmpty
-      ? 'No hay horarios registrados para generar el resumen.'
-      : summary;
+  final summary =
+      saved.isEmpty ? generateDeclarationSummary(declaration) : saved;
+  final additional =
+      declaration['additionalObservations']?.toString().trim() ?? '';
+  return [
+    summary.isEmpty
+        ? 'No hay horarios registrados para generar el resumen.'
+        : summary,
+    if (additional.isNotEmpty) 'Observaciones adicionales:\n$additional'
+  ].join('\n\n');
 }
 
 /// Encuentra el motivo de devolución más reciente para destacarlo en historial.

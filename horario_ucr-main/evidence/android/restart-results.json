@@ -1,0 +1,16 @@
+{
+  "draftId": "2uJGiN5kwBA7Su9Q71Ng",
+  "restoredAfterProcessStop": true,
+  "sameIdAfterRetry": true,
+  "requiredFieldErrorsVisible": true,
+  "finalStatus": "VALIDADA",
+  "layoutCases": [
+    "320.0 dp / texto 1.0 / teclado",
+    "320.0 dp / texto 2.0 / teclado",
+    "360.0 dp / texto 1.0 / teclado",
+    "360.0 dp / texto 2.0 / teclado",
+    "600.0 dp / texto 1.0 / teclado",
+    "600.0 dp / texto 2.0 / teclado"
+  ],
+  "completed": true
+}

@@ -92,6 +92,7 @@ class Declaration {
   final String superiorId;
   final String status;
   final String observations;
+  final String additionalObservations;
 
   // Motivo de devolución, independiente del resumen de horarios.
   final String returnNote;
@@ -112,6 +113,7 @@ class Declaration {
     required this.superiorId,
     required this.status,
     required this.observations,
+    this.additionalObservations = '',
     this.returnNote = '',
     required this.version,
     required this.appointments,
@@ -130,6 +132,7 @@ class Declaration {
         'superiorId': superiorId,
         'status': status,
         'observations': observations,
+        'additionalObservations': additionalObservations,
         'returnNote': returnNote,
         'version': version,
         'appointments': appointments.map((a) => a.toMap()).toList(),
@@ -154,6 +157,7 @@ class Declaration {
       superiorId: map['superiorId'] ?? '',
       status: map['status'] ?? 'BORRADOR',
       observations: map['observations'] ?? '',
+      additionalObservations: map['additionalObservations'] ?? '',
       returnNote: map['returnNote'] ?? '',
       version: (map['version'] as num? ?? 1).toInt(),
       appointments: appointments(map['appointments']),

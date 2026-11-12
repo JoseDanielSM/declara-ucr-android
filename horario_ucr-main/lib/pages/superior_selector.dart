@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 class SuperiorSelector extends StatefulWidget {
   final TextEditingController controller;
   final bool enabled;
+  final String? errorText;
 
   const SuperiorSelector({
     super.key,
     required this.controller,
     this.enabled = true,
+    this.errorText,
   });
 
   @override
@@ -80,6 +82,7 @@ class _SuperiorSelectorState extends State<SuperiorSelector> {
             labelText: 'Superior jerárquico',
             prefixIcon: const Icon(Icons.supervisor_account_outlined),
             errorMaxLines: 3,
+            errorText: widget.errorText,
             helperMaxLines: 3,
             helperText: widget.enabled
                 ? 'Seleccioná a la persona que revisará tu declaración.'

@@ -27,6 +27,10 @@ dependencies:
   cupertino_icons: ^2.0.0
 
 dev_dependencies:
+  integration_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
@@ -35,6 +39,9 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/images/firma_ucr_con_texto.png
+    - assets/images/firma_ucr_oficial.png
+    - assets/images/firma_ucr_promocional.png
     - assets/images/logo_ucr.png
     - assets/images/logo_declara_ucr.png
     - assets/images/ucr_fondo.png

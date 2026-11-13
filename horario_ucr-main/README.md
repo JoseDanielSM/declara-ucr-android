@@ -19,7 +19,7 @@ Integrantes ordenados alfabéticamente por primer apellido:
 - [Arquitectura](#arquitectura)
 - [Panel interactivo](#panel-interactivo)
 - [Pruebas](#pruebas)
-- [Reflexión técnica](#reflexión-técnica)
+- [Reflexión técnica de cierre](#reflexión-técnica-de-cierre)
 
 ## Descripción
 
@@ -85,9 +85,22 @@ npm.cmd run test:drafts
 
 La batería Flutter incluye 114 pruebas, el validador 67 y los servicios locales 25 comprobaciones. Las cuatro pruebas nuevas verifican filtros y tarjetas a 320, 360 y 600 dp con texto al 200 %, teclado y acciones accesibles. El caso obligatorio informa lunes 11:00–12:00 como traslape entre 08:00–12:00 y 11:00–14:00; al corregir a 13:00–14:00 acepta cinco horas UCR. Las evidencias previas también comprueban recuperación de borrador, versión de devolución, firmas internas y RRHH en emuladores. No se presentan como pruebas ejecutadas con cuentas reales en producción.
 
-## Reflexión técnica
+## Reflexión técnica de cierre
 
-1. **Reutilización:** modelos, autenticación, perfiles, servicios de declaración, validación, historial, PDF, permisos y transacciones del sistema existente.
-2. **Adaptación móvil:** se dividió el formulario en cuatro pasos, se reemplazaron tablas por tarjetas y se probaron 320, 360 y 600 dp con teclado y texto ampliado; se conserva el avance al navegar.
-3. **Identidad UCR:** se centralizaron tipografía, colores y componentes; los identificadores oficiales conservan su proporción. Las páginas y fuentes consultadas están en `documentation/Laboratorio_Android.md`.
-4. **Flujo completo:** se conservan las firmas electrónicas internas y la revisión existente. Una firma digital certificada requeriría una integración distinta; la firma del APK solo identifica la distribución de la aplicación.
+Las cuatro preguntas corresponden a la sección 10 del PDF (página 5). También están respondidas en el [README principal del repositorio](../README.md#reflexión-técnica-de-cierre).
+
+### 1. ¿Qué componentes del sistema web se pudieron reutilizar en la aplicación móvil?
+
+Los modelos de declaración, nombramiento e intervalo; Firebase Authentication; perfiles y roles; consultas y servicios de declaración; reglas de validación; historial, versiones y generación de PDF. Se conservó la arquitectura existente y se añadieron adaptación móvil y operaciones de borrador, sin reconstruir la autenticación ni crear un backend independiente.
+
+### 2. ¿Qué dificultades surgieron al adaptar la declaración jurada a una pantalla pequeña?
+
+Las tablas y el formulario extenso dificultaban editar con el teclado abierto. Se dividió la captura en Datos, Nombramientos, Horarios y Resumen, usando tarjetas y contenido desplazable. Se conserva el contenido al avanzar o regresar, se avisa al salir con cambios y los conflictos enlazan al día y bloques que requieren corrección. Se verificaron 320, 360 y 600 dp con texto ampliado.
+
+### 3. ¿Cómo contribuyó el Manual de Identidad Visual de la UCR a estandarizar la experiencia?
+
+Unificó paleta, Myriad Pro, jerarquía y tratamiento de identificadores oficiales sin deformarlos. El tema Flutter comparte esas decisiones entre pantallas y plataformas; la guía de contraste complementó la selección de texto y fondos. Estados y errores incluyen texto e iconos. Las páginas consultadas y recursos están identificados en [la justificación visual](documentation/Laboratorio_Android.md#justificación-visual-y-fuentes).
+
+### 4. ¿Qué cambios se requerirían para integrarse con el flujo completo de firmas y aprobación?
+
+Se requieren permisos por rol en servidor, transiciones de estado verificadas, firmas ligadas a una versión, historial de autor y fecha, devolución con nueva versión, notificaciones y recepción por RRHH. Esta adaptación conserva esos mecanismos existentes como ampliación del mínimo del laboratorio. Las firmas son registros electrónicos internos identificados como tales; una firma digital certificada requeriría un proveedor y validación de certificados y documentos. Firmar el APK no certifica las declaraciones.

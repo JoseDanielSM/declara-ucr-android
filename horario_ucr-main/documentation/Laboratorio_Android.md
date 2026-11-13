@@ -6,7 +6,7 @@ El PDF del laboratorio exige un módulo móvil de captura, validación, borrador
 
 Desde Windows: `Iniciar-DeclaraUCR-Android.cmd`. Desde VS Code: tarea **DeclaraUCR: iniciar Android**, o configuración **DeclaraUCR Android local** con F5. La carpeta de comandos Flutter es la que contiene `pubspec.yaml`, dentro de la carpeta exterior abierta en VS Code.
 
-Herramientas comprobadas en esta PC: Flutter 3.47.9 / Dart 3.13.7, Node 24.19, Firebase CLI 15.34, Java 21 para Firebase y herramientas AVD, JBR de Android Studio para Gradle, SDK Android API 36 y AVD Pixel 6 x86_64 con aceleración WHPX. La primera descarga de la imagen es de aproximadamente 1.8 GB y requiere varios GB disponibles para extraerla. La APK es de desarrollo y no necesita una cuenta Firebase de Internet.
+Herramientas comprobadas en esta PC: Flutter 3.47.9 / Dart 3.13.7, Node 24.19, Firebase CLI 15.34, Java 21 para Firebase y herramientas AVD, JBR de Android Studio para Gradle, SDK Android API 36 y AVD Pixel 6 x86_64 con aceleración WHPX. La primera descarga de la imagen es de aproximadamente 1.8 GB y requiere varios GB disponibles para extraerla. Las evidencias de esta guía se obtuvieron con una APK de desarrollo y Firebase local. La distribución posterior para teléfono es un APK release conectado al Firebase original; consultá [Instalación Android](Instalacion_Android.md) y [Estado de entrega](Estado_entrega.md) para distinguir ambos entornos.
 
 | Servicio | Puerto de la PC |
 | --- | --- |
@@ -72,7 +72,7 @@ powershell -ExecutionPolicy Bypass -File Run-Android-Evidence.ps1
 
 El caso obligatorio registra lunes 08:00–12:00 y 11:00–14:00: identifica exactamente el traslape 11:00–12:00 y rechaza validar. Además informa la invasión del almuerzo y la diferencia de jornada. Al cambiar el segundo bloque a 13:00–14:00, acepta las cinco horas UCR de una fracción 1/8. Se mantienen las reglas de almuerzo y máximo diario de diez horas. Los casos existentes también cubren instituciones distintas, intervalos contiguos, fin anterior al inicio, fechas inexistentes y valores numéricos inválidos.
 
-Las pruebas de borradores cubren ausencia de datos, reintentos, propietario y rol incorrectos, versiones antiguas, campos no admitidos, límites, observaciones, metadatos editables, puestos externos libres y prohibición de modificar contenido validado. Las 110 pruebas Flutter incluyen las combinaciones de 320, 360 y 600 dp, texto 100/200 % y teclado para acceso y panel de validación.
+Las pruebas de borradores cubren ausencia de datos, reintentos, propietario y rol incorrectos, versiones antiguas, campos no admitidos, límites, observaciones, metadatos editables, puestos externos libres y prohibición de modificar contenido validado. La ejecución original registrada en las evidencias aprobó 110 pruebas Flutter e incluye las combinaciones de 320, 360 y 600 dp, texto 100/200 % y teclado para acceso y panel de validación. La revisión posterior aprobó 114 pruebas, con cuatro casos adicionales de filtros y tarjetas interactivas. No se altera el manifiesto histórico para atribuirle pruebas posteriores.
 
 `integration_test/mobile_workflow_test.dart` ejecuta servicios reales desde Android: guarda un formulario incompleto desde su botón, impide validar el conflicto, corrige cinco horas, valida, firma internamente, devuelve, crea versión 2, vuelve a firmar, recibe y finaliza en RRHH, archiva y descarga el PDF. Accede a los cuatro roles y captura sus pantallas. Las transiciones se invocan mediante el mismo servicio Flutter que usan los botones; no es una prueba exhaustiva de cada toque de todos los diálogos.
 
@@ -113,4 +113,22 @@ El guardado anterior exigía una declaración completa; se añadió un camino de
 
 La herramienta nueva de Android SDK usa rutas de paquete con `/` en su comando `android sdk install`; el creador de AVD conserva el formato con `;`. La conexión de depuración automática tuvo un bloqueo de DDS en esta PC; las pruebas instrumentadas usan `--disable-dds` y un puerto explícito. Algunos plugins Firebase emiten una advertencia de compatibilidad futura con Kotlin integrado de Gradle; con las versiones verificadas las compilaciones terminan correctamente.
 
-La distribución es local. No se desplegó ningún cambio al proyecto Firebase original, no se configuró iOS y no se emitieron firmas digitales certificadas.
+Las evidencias de esta guía corresponden al entorno local. Posteriormente se registró Android en el Firebase original y se publicaron únicamente las cuatro funciones móviles descritas en [Estado de entrega](Estado_entrega.md), con la cuenta autorizada. El APK para teléfono usa ese Firebase por Internet y no necesita la PC encendida. No se configuró iOS ni se emitieron firmas digitales certificadas.
+
+## Correspondencia de las pruebas y entregables del PDF
+
+| Sección del PDF | Evidencia disponible y alcance |
+| --- | --- |
+| 7, prueba 01: declaración válida | El recorrido Android guarda el borrador corregido, abre el resumen y valida las cinco horas UCR; captura `03-resumen-corregido.png` |
+| 7, prueba 02: horarios traslapados | Lunes 08:00–12:00 y 11:00–14:00: conflicto 11:00–12:00, validación rechazada y estado BORRADOR; captura `02-horarios-conflicto.png` |
+| 7, prueba 03: datos incompletos | Guardado de borrador incompleto y errores visibles de período/superior; `restart-results.json`, `requiredFieldErrorsVisible: true` |
+| 7, prueba 04: persistencia | Cierre del proceso, reapertura y recuperación del ID y contenido; `restart-results.json`, `restoredAfterProcessStop: true` |
+| 7, prueba 05: vista móvil | Recorrido en Pixel 6/API 36 y casos 320/360/600 dp, texto normal/ampliado y teclado; capturas y resultados de reapertura |
+| 8: código y commit | Repositorio Git e historial; referencia previa `43f8561`, implementación inicial Android `258474c` y cambios posteriores identificables |
+| 8: tres capturas mínimas | `01-inicio-android.png`, `02-horarios-conflicto.png` y `03-resumen-corregido.png`; se incluyen seis capturas adicionales |
+| 8: video de hasta dos minutos | `demostracion-android.mp4`, duración registrada de 63,1 segundos |
+| 8: README técnico | [README principal](../../README.md) y [README técnico](../README.md): estructura, reutilización, persistencia, pruebas y dificultades |
+| 8: justificación visual | Fuentes, decisiones y páginas consultadas en la sección anterior de esta guía |
+| 10: cuatro preguntas de reflexión | Preguntas completas y respuestas explícitas en ambos README |
+
+Todas las pruebas del laboratorio conservadas aquí usan datos ficticios. El PDF admite emulador o teléfono: una comprobación pendiente en teléfono físico no invalida la evidencia del emulador, pero no debe presentarse como ya realizada. La rúbrica y la valoración institucional corresponden al docente; las verificaciones documentadas no equivalen a una auditoría completa de accesibilidad.

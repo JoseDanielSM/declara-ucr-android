@@ -12,6 +12,7 @@ APK entregado: `DeclaraUCR-telefono.apk`, versión `1.0.1`, código `2`, Android
 - Verificación externa de las cuatro URLs: **HTTP 401 / UNAUTHENTICATED**, emitido por cada handler al enviar una solicitud sin sesión. El bloqueo anterior HTTP 403 de infraestructura quedó resuelto. Esta comprobación acredita acceso de red y rechazo sin sesión; no sustituye una operación completa con credenciales reales.
 - Las tarjetas Total, Pendientes, Finalizadas y Borrador abren Trámites con el filtro correspondiente, limpian búsquedas previas y permiten resultados vacíos. Pendientes incluye borradores y excluye FINALIZADA y ANULADA. Se verificaron pulsación, teclado y acción accesible a 320, 360 y 600 dp con texto al 200 %.
 - No se han probado las credenciales de usuarios reales ni todos los roles en un teléfono físico.
+- Revisión documental contra las páginas 2–5 del PDF: ambos README incluyen las cuatro preguntas completas y sus respuestas; el README principal incluye estructura, persistencia, dificultades, matriz R1–R6 y enlaces a las evidencias. La guía del laboratorio relaciona las cinco pruebas y los entregables con sus archivos y distingue la ejecución local original de la distribución posterior para teléfono.
 
 La limpieza retiró informes antiguos, resultados duplicados y documentos históricos del proyecto activo. Se guardaron en .local/archivo-historico de la carpeta exterior, fuera de Git. Los datos locales Firebase y las claves de firma se conservaron.
 

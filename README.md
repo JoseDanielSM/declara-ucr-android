@@ -13,6 +13,7 @@ Integrantes ordenados alfabéticamente por primer apellido:
 | Eidan Picado Leiva | C4I410 |
 | José Segura Menjivar | C4J929 |
 | Grace Solano Delgado | C4K066 |
+| Cristian Chinchilla Fonseca | C4E360 |
 
 ## Instalar en el teléfono
 

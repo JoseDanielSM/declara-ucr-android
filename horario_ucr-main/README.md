@@ -1,5 +1,26 @@
 # DeclaraUCR — README técnico
 
+## Integrantes
+
+Integrantes ordenados alfabéticamente por primer apellido:
+
+| Nombre completo | Carné |
+| --- | --- |
+| Daniel Araya Hernandez | C4C543 |
+| Luis Gomez Esquivel | C4F464 |
+| Eidan Picado Leiva | C4I410 |
+| José Segura Menjivar | C4J929 |
+| Grace Solano Delgado | C4K066 |
+
+## Contenido
+
+- [Descripción](#descripción)
+- [Instalación y compilación](#instalación-y-compilación)
+- [Arquitectura](#arquitectura)
+- [Panel interactivo](#panel-interactivo)
+- [Pruebas](#pruebas)
+- [Reflexión técnica](#reflexión-técnica)
+
 ## Descripción
 
 Cliente Flutter Android/web del sistema de declaraciones juradas de horario y jornada laboral UCR. Captura datos personales y laborales, nombramientos UCR y externos, bloques de lunes a sábado y observaciones; guarda borradores incompletos y comprueba los datos antes de validarlos. Reutiliza el flujo existente de declarante, superior, Recursos Humanos y administración.

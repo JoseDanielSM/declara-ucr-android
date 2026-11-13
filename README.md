@@ -2,6 +2,18 @@
 
 Aplicación académica Flutter para Android y web que adapta el sistema existente de declaraciones juradas de horario y jornada laboral de la UCR. Incluye cuatro roles, edición en pasos, borradores, validación de horarios, firmas electrónicas internas, seguimiento, notificaciones y PDF.
 
+## Integrantes
+
+Integrantes ordenados alfabéticamente por primer apellido:
+
+| Nombre completo | Carné |
+| --- | --- |
+| Daniel Araya Hernandez | C4C543 |
+| Luis Gomez Esquivel | C4F464 |
+| Eidan Picado Leiva | C4I410 |
+| José Segura Menjivar | C4J929 |
+| Grace Solano Delgado | C4K066 |
+
 ## Instalar en el teléfono
 
 El APK firmado se genera en `horario_ucr-main/output/android/DeclaraUCR-telefono.apk`. Copialo al teléfono, abrilo e ingresá con una cuenta del Firebase original **DeclaraHorario-UCR**. El teléfono necesita Internet; no necesita que la PC esté encendida. Las cuentas locales de prueba no pertenecen al Firebase real.

@@ -36,6 +36,19 @@ El editor reserva un ID antes del primer guardado. `SaveResult` devuelve ID, ver
 
 `observations` contiene el resumen automático; `additionalObservations` conserva el texto opcional del declarante, hasta 2000 caracteres. Ambos se muestran en consulta y PDF. Los documentos anteriores se leen con texto adicional vacío y las versiones firmadas permanecen inmutables.
 
+## Panel interactivo
+
+Las tarjetas de Inicio y Trámites abren la lista de declaraciones y aplican el filtro elegido. Limpian la búsqueda anterior, muestran la selección y llevan al listado. Un contador en cero mantiene el filtro y muestra el resultado vacío.
+
+| Tarjeta | Resultado |
+| --- | --- |
+| Total de declaraciones | Todas las declaraciones visibles para el rol actual |
+| Pendientes | Estados distintos de `FINALIZADA` y `ANULADA`, incluidos borradores |
+| Finalizadas | Solo `FINALIZADA` |
+| Borrador | Solo `BORRADOR` |
+
+Las tarjetas admiten pulsación, navegación por teclado y lectores de pantalla; su altura se adapta al texto ampliado. Los filtros conservan los permisos y el alcance de consulta del usuario.
+
 ## Pruebas
 
 Desde esta carpeta:
@@ -49,7 +62,7 @@ npm.cmd run test:local
 npm.cmd run test:drafts
 ```
 
-La batería Flutter incluye 110 pruebas, el validador 67 y los servicios locales 25 comprobaciones. El caso obligatorio informa lunes 11:00–12:00 como traslape entre 08:00–12:00 y 11:00–14:00; al corregir a 13:00–14:00 acepta cinco horas UCR. Las evidencias previas también comprueban recuperación de borrador, versión de devolución, firmas internas y RRHH en emuladores. No se presentan como pruebas ejecutadas con cuentas reales en producción.
+La batería Flutter incluye 114 pruebas, el validador 67 y los servicios locales 25 comprobaciones. Las cuatro pruebas nuevas verifican filtros y tarjetas a 320, 360 y 600 dp con texto al 200 %, teclado y acciones accesibles. El caso obligatorio informa lunes 11:00–12:00 como traslape entre 08:00–12:00 y 11:00–14:00; al corregir a 13:00–14:00 acepta cinco horas UCR. Las evidencias previas también comprueban recuperación de borrador, versión de devolución, firmas internas y RRHH en emuladores. No se presentan como pruebas ejecutadas con cuentas reales en producción.
 
 ## Reflexión técnica
 

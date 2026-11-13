@@ -6,11 +6,14 @@ const { createDeclarationHandlers } = require('./declaration-handlers');
 // Se carga desde index.js después de initializeApp().
 const handlers = createDeclarationHandlers({ db: getFirestore(), FieldValue, HttpsError });
 const options = { region: 'us-east1', timeoutSeconds: 60, maxInstances: 2 };
+// El SDK cliente usa tokens Firebase, no credenciales IAM de Cloud Run.
+// Los handlers exigen request.auth y comprueban rol y propietario.
+const mobileOptions = { ...options, invoker: 'public' };
 
 exports.saveDeclarationValidated = onCall(options, handlers.save);
-exports.saveDeclarationDraft = onCall(options, handlers.saveDraft);
-exports.validateMobileDeclaration = onCall(options, handlers.validateStored);
-exports.newMobileDeclarationVersion = onCall(options, handlers.newVersion);
+exports.saveDeclarationDraft = onCall(mobileOptions, handlers.saveDraft);
+exports.validateMobileDeclaration = onCall(mobileOptions, handlers.validateStored);
+exports.newMobileDeclarationVersion = onCall(mobileOptions, handlers.newVersion);
 exports.validateDeclarationSchedule = onCall(options, handlers.validateStored);
 exports.newDeclarationVersion = onCall(options, handlers.newVersion);
 exports.listSuperiors = onCall(options, handlers.listSuperiors);

@@ -2,7 +2,7 @@
 name: horario_ucr_integrador
 description: Sistema de declaraciones juradas de horario UCR
 publish_to: none
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: '>=3.4.0 <4.0.0'

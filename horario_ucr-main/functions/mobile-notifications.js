@@ -3,7 +3,7 @@ const {onCall, HttpsError} = require('firebase-functions/v2/https');
 const {getFirestore, FieldValue} = require('firebase-admin/firestore');
 
 // Solo modifica la bandeja del usuario autenticado; nunca recibe un UID del cliente.
-exports.markMobileNotificationsRead = onCall({region:'us-east1',maxInstances:2}, async request => {
+exports.markMobileNotificationsRead = onCall({region:'us-east1',maxInstances:2,invoker:'public'}, async request => {
   if (!request.auth) throw new HttpsError('unauthenticated','Iniciá sesión.');
   const id = request.data?.id;
   const collection = getFirestore().collection('users').doc(request.auth.uid).collection('notifications');

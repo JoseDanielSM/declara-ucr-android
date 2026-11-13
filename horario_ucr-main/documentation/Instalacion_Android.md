@@ -67,7 +67,7 @@ flutter test --no-pub
 npm.cmd run test:backend
 ```
 
-Los 110 casos Flutter cubren horarios, formulario y adaptación de 320, 360 y 600 dp con texto normal/ampliado y teclado. Las 67 pruebas del validador y los casos de servicios locales se describen en `Laboratorio_Android.md`. Las capturas y el PDF de `evidence/android/` se obtuvieron con datos ficticios en emuladores y no certifican que se hayan ejecutado todos los roles con cuentas reales en producción.
+Los 114 casos Flutter cubren horarios, formulario y adaptación de 320, 360 y 600 dp con texto normal/ampliado y teclado, incluidos los filtros y las acciones accesibles del panel interactivo. Las 67 pruebas del validador y los casos de servicios locales se describen en `Laboratorio_Android.md`. Las capturas y el PDF de `evidence/android/` se obtuvieron con datos ficticios en emuladores y no certifican que se hayan ejecutado todos los roles con cuentas reales en producción.
 
 La edición, resumen y PDF muestran observaciones automáticas y adicionales por separado. Las firmas de declaración son registros electrónicos internos; la firma criptográfica del APK sirve para distribuir y actualizar la aplicación y no convierte esas declaraciones en documentos con firma digital certificada.
 
@@ -75,6 +75,22 @@ La edición, resumen y PDF muestran observaciones automáticas y adicionales por
 
 Para usar el teléfono normalmente no ejecutes los accesos `Iniciar-DeclaraUCR*`, que preparan la demostración local. El registro y la asignación de roles dependen de los permisos del Firebase original. Los borradores confirmados se guardan en Firebase; guardar requiere conexión. El período y el superior deben estar habilitados y disponibles.
 
-Los despliegues requieren una cuenta autorizada del proyecto. El alcance móvil se publica con `firebase deploy --project declarahorario-ucr-cff7a --only functions:saveDeclarationDraft,functions:validateMobileDeclaration,functions:newMobileDeclarationVersion,functions:markMobileNotificationsRead`. Esta selección evita reemplazar o eliminar funciones ajenas al módulo móvil. No se publica Hosting automáticamente ni se sustituyen las reglas del proyecto por las del emulador.
+Los despliegues requieren una cuenta autorizada del proyecto. El alcance móvil se publica con `firebase deploy --account josedanielsm17@gmail.com --project declarahorario-ucr-cff7a --only functions:saveDeclarationDraft,functions:validateMobileDeclaration,functions:newMobileDeclarationVersion,functions:markMobileNotificationsRead`. Esta selección evita reemplazar o eliminar funciones ajenas al módulo móvil. No se publica Hosting automáticamente ni se sustituyen las reglas del proyecto por las del emulador.
+
+### Recuperación del acceso a las funciones móviles
+
+Si la creación de una callable falla al configurar IAM, una actualización de código posterior puede informar éxito y conservar el endpoint restringido. En esta entrega se verificó y corrigió la política de los cuatro servicios con autorización explícita del propietario. El acceso de red permite invocar el protocolo callable; el token Firebase y los permisos se comprueban dentro de cada handler.
+
+Para reproducir esa corrección en otra PC con Google Cloud CLI instalado, una cuenta autorizada y autorización del propietario para habilitar esos endpoints:
+
+```powershell
+gcloud auth login josedanielsm17@gmail.com
+$services = @('savedeclarationdraft', 'validatemobiledeclaration', 'newmobiledeclarationversion', 'markmobilenotificationsread')
+foreach ($service in $services) {
+    gcloud run services add-iam-policy-binding $service --project=declarahorario-ucr-cff7a --region=us-east1 --account=josedanielsm17@gmail.com --member=allUsers --role=roles/run.invoker
+}
+```
+
+Comprobá las URLs `https://us-east1-declarahorario-ucr-cff7a.cloudfunctions.net/NOMBRE_FUNCION` con POST, `Content-Type: application/json` y cuerpo `{"data":{}}`, sin token: deben devolver HTTP 401 y `UNAUTHENTICATED`. Un HTTP 403 HTML indica que el acceso de infraestructura sigue restringido. No se deben aplicar estos comandos a otros servicios ni quitar la autenticación de los handlers. Referencia: [administración de acceso de Cloud Run](https://docs.cloud.google.com/run/docs/securing/managing-access).
 
 Referencias técnicas: [Firebase para Flutter](https://firebase.google.com/docs/flutter/setup), [compilación y firma Android](https://docs.flutter.dev/deployment/android). La matriz del laboratorio y las fuentes de identidad visual se conservan en `Laboratorio_Android.md`.

@@ -6,7 +6,7 @@ Aplicación académica Flutter para Android y web que adapta el sistema existent
 
 El APK firmado se genera en `horario_ucr-main/output/android/DeclaraUCR-telefono.apk`. Copialo al teléfono, abrilo e ingresá con una cuenta del Firebase original **DeclaraHorario-UCR**. El teléfono necesita Internet; no necesita que la PC esté encendida. Las cuentas locales de prueba no pertenecen al Firebase real.
 
-**Estado de la integración:** consultá [Estado de entrega](horario_ucr-main/documentation/Estado_entrega.md). El APK compila, pero la invocación de las funciones móviles nuevas requiere completar permisos de Firebase antes de considerar operativo el guardado en producción.
+**Versión 1.0.1:** las cuatro funciones móviles están publicadas y su acceso desde el APK está habilitado. Las tarjetas de Total, Pendientes, Finalizadas y Borrador abren los trámites filtrados. Consultá los resultados y límites de verificación en [Estado de entrega](horario_ucr-main/documentation/Estado_entrega.md).
 
 ## Documentación
 

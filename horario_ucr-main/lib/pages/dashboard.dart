@@ -10,6 +10,7 @@ import '../services/validation_service.dart';
 import 'declaration_editor.dart';
 export 'declaration_editor.dart' show EditorPage;
 import 'notification_bell.dart';
+import 'declaration_summary_card.dart';
 
 import 'admin_page.dart';
 import 'personal_profile_page.dart';
@@ -45,6 +46,14 @@ class _DashboardState extends State<Dashboard> {
   bool _newestFirst = true;
   String _section = 'inicio';
   bool _sidebarExpanded = true;
+  final _registeredKey = GlobalKey();
+  final _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   void initState() {
@@ -318,60 +327,35 @@ class _DashboardState extends State<Dashboard> {
   Widget _summary(
     String label,
     int count,
-    IconData icon,
     Color accent,
   ) {
-    final Color backgroundColor = switch (label) {
-      'Total de declaraciones' => UcrColors.background,
-      'Pendientes' => UcrColors.white,
-      'Finalizadas' => UcrColors.white,
-      _ => UcrColors.white,
+    final filter = switch (label) {
+      'Pendientes' => 'PENDIENTES',
+      'Finalizadas' => 'FINALIZADA',
+      'Borrador' => 'BORRADOR',
+      _ => 'TODOS',
     };
-
-    return Container(
-      height: 78,
-      padding: const EdgeInsets.symmetric(
-        horizontal: 14,
-        vertical: 11,
-      ),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(13),
-        border: Border.all(
-          color: accent.withValues(alpha: 0.38),
-          width: 1.35,
-        ),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: accent,
-            child: Text(
-              '$count',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 23,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              label,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                color: UcrColors.blue,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
-      ),
+    return DeclarationSummaryCard(
+      label: label,
+      count: count,
+      accent: accent,
+      selected: _section == 'declaraciones' && _statusFilter == filter,
+      onTap: () {
+        _searchController.clear();
+        setState(() {
+          _section = 'declaraciones';
+          _search = '';
+          _statusFilter = filter;
+        });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          final target = _registeredKey.currentContext;
+          if (target != null) {
+            Scrollable.ensureVisible(target,
+                duration: const Duration(milliseconds: 300));
+          }
+        });
+      },
     );
   }
 
@@ -1752,13 +1736,16 @@ class _DashboardState extends State<Dashboard> {
                     )
                     .length;
 
-                final statuses = list.map((d) => d.status).toSet().toList()
+                final statuses = {
+                  'BORRADOR',
+                  'FINALIZADA',
+                  ...list.map((d) => d.status),
+                  if (_statusFilter != 'TODOS' && _statusFilter != 'PENDIENTES')
+                    _statusFilter
+                }.toList()
                   ..sort();
 
-                final selectedStatus =
-                    _statusFilter == 'TODOS' || statuses.contains(_statusFilter)
-                        ? _statusFilter
-                        : 'TODOS';
+                final selectedStatus = _statusFilter;
 
                 final filtered = list.where((d) {
                   final query = _search.trim().toLowerCase();
@@ -1770,7 +1757,7 @@ class _DashboardState extends State<Dashboard> {
                       d.status.toLowerCase().contains(query);
 
                   return matchesQuery &&
-                      (selectedStatus == 'TODOS' || d.status == selectedStatus);
+                      matchesDeclarationStatus(d.status, selectedStatus);
                 }).toList()
                   ..sort(
                     (a, b) => _newestFirst
@@ -1886,7 +1873,6 @@ class _DashboardState extends State<Dashboard> {
                                 child: _summary(
                                   'Total de declaraciones',
                                   list.length,
-                                  Icons.description_outlined,
                                   UcrColors.blue,
                                 ),
                               ),
@@ -1895,7 +1881,6 @@ class _DashboardState extends State<Dashboard> {
                                 child: _summary(
                                   'Pendientes',
                                   pending,
-                                  Icons.schedule_outlined,
                                   UcrColors.blue,
                                 ),
                               ),
@@ -1904,7 +1889,6 @@ class _DashboardState extends State<Dashboard> {
                                 child: _summary(
                                   'Finalizadas',
                                   finished,
-                                  Icons.check_circle_outline,
                                   UcrColors.blue,
                                 ),
                               ),
@@ -1913,7 +1897,6 @@ class _DashboardState extends State<Dashboard> {
                                 child: _summary(
                                   'Borrador',
                                   draft,
-                                  Icons.edit_note_outlined,
                                   UcrColors.muted,
                                 ),
                               ),
@@ -2056,7 +2039,6 @@ class _DashboardState extends State<Dashboard> {
                                 child: _summary(
                                   'Total de declaraciones',
                                   list.length,
-                                  Icons.description_outlined,
                                   UcrColors.blue,
                                 ),
                               ),
@@ -2065,7 +2047,6 @@ class _DashboardState extends State<Dashboard> {
                                 child: _summary(
                                   'Pendientes',
                                   pending,
-                                  Icons.schedule_outlined,
                                   UcrColors.blue,
                                 ),
                               ),
@@ -2074,7 +2055,6 @@ class _DashboardState extends State<Dashboard> {
                                 child: _summary(
                                   'Finalizadas',
                                   finished,
-                                  Icons.check_circle_outline,
                                   UcrColors.muted,
                                 ),
                               ),
@@ -2084,6 +2064,7 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       const SizedBox(height: 24),
                       Container(
+                        key: _registeredKey,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           border: Border.all(
@@ -2137,6 +2118,7 @@ class _DashboardState extends State<Dashboard> {
                                       SizedBox(
                                         width: compact ? 260 : 330,
                                         child: TextField(
+                                          controller: _searchController,
                                           onChanged: (value) => setState(
                                             () => _search = value,
                                           ),
@@ -2152,6 +2134,7 @@ class _DashboardState extends State<Dashboard> {
                                       SizedBox(
                                         width: 210,
                                         child: DropdownButtonFormField<String>(
+                                          key: ValueKey(selectedStatus),
                                           initialValue: selectedStatus,
                                           isExpanded: true,
                                           decoration: const InputDecoration(
@@ -2160,6 +2143,9 @@ class _DashboardState extends State<Dashboard> {
                                             border: OutlineInputBorder(),
                                           ),
                                           items: [
+                                            const DropdownMenuItem<String>(
+                                                value: 'PENDIENTES',
+                                                child: Text('Pendientes')),
                                             const DropdownMenuItem<String>(
                                               value: 'TODOS',
                                               child: Text(

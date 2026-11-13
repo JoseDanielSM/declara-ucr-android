@@ -1,11 +1,20 @@
 {
+  "name": "declaraucr-local",
+  "version": "1.0.0",
+  "private": true,
+  "engines": { "node": ">=24 <25" },
   "scripts": {
+    "setup": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./Prepare-Local.ps1",
+    "check:setup": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./Prepare-Local.ps1 -CheckOnly",
+    "start:android": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./Start-Android.ps1",
     "start": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./Start-Local.ps1",
     "stop": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./Stop-Local.ps1",
     "test:local": "node scripts/check-local.cjs",
+    "test:drafts": "node scripts/check-drafts.cjs",
     "test:backend": "node --test security_tests/backend_validator.test.cjs"
   },
   "devDependencies": {
+    "firebase-tools": "15.34.0",
     "@firebase/rules-unit-testing": "^5.0.2",
     "firebase": "^12.19.0"
   }

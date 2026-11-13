@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -29,11 +31,19 @@ android {
         versionName = flutter.versionName
     }
 
+    val signingFile = rootProject.file("key.properties")
+    if (signingFile.exists()) {
+        val signing = Properties().apply { signingFile.inputStream().use { load(it) } }
+        signingConfigs.create("phoneRelease") {
+            keyAlias = signing.getProperty("keyAlias")
+            keyPassword = signing.getProperty("keyPassword")
+            storeFile = file(signing.getProperty("storeFile"))
+            storePassword = signing.getProperty("storePassword")
+        }
+    }
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (signingFile.exists()) signingConfigs.getByName("phoneRelease") else null
         }
     }
 }

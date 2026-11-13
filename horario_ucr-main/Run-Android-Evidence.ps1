@@ -1,6 +1,7 @@
 $ErrorActionPreference = 'Stop'
 Set-Location -LiteralPath $PSScriptRoot
-$adb = Join-Path $env:LOCALAPPDATA 'Android\sdk\platform-tools\adb.exe'
+. (Join-Path $PSScriptRoot 'Local-Common.ps1')
+$adb = Join-Path (Find-AndroidSdk) 'platform-tools\adb.exe'
 $output = Join-Path $PSScriptRoot 'evidence\android'
 New-Item -ItemType Directory -Force -Path $output | Out-Null
 $runner = Join-Path $PSScriptRoot '.local\run-android-drive.ps1'

@@ -1,0 +1,3 @@
+# Pruebas de empaquetado y archivos temporales del repositorio exterior
+.local/
+*.log

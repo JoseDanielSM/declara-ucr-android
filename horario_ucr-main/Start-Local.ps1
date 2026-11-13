@@ -3,7 +3,6 @@ param([switch]$NoBrowser, [switch]$SkipBuild)
 Set-Location -LiteralPath $projectRoot
 New-Item -ItemType Directory -Force -Path $localRoot | Out-Null
 $entries = @()
-$firebaseCli = Find-FirebaseCli
 Set-LocalEnvironment
 
 if (Test-Path -LiteralPath $stateFile) {
@@ -27,11 +26,13 @@ try {
         if (-not (Test-Path -LiteralPath (Join-Path $directory 'node_modules'))) {
             Push-Location $directory
             try {
-                & npm ci --no-audit --no-fund
+                & npm.cmd ci --no-audit --no-fund
                 if ($LASTEXITCODE -ne 0) { throw "No se pudieron instalar las dependencias de $directory." }
             } finally { Pop-Location }
         }
     }
+
+    $firebaseCli = Find-FirebaseCli
 
     if (-not $SkipBuild) {
         Write-Host 'Preparando la aplicacion local (el primer inicio puede tardar unos minutos)...'

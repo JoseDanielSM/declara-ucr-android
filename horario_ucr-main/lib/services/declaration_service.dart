@@ -14,6 +14,7 @@ import 'declaration_pdf_layout.dart';
 import 'declaration_observations.dart';
 
 import 'package:cloud_functions/cloud_functions.dart';
+import 'local_environment.dart';
 
 class SaveResult {
   final String id;
@@ -204,8 +205,12 @@ class DeclarationService {
     // Estas acciones se verifican en el servidor sobre los datos guardados.
     if (action == 'validate' || action == 'newVersion') {
       final functionName = action == 'validate'
-          ? 'validateDeclarationSchedule'
-          : 'newDeclarationVersion';
+          ? (LocalEnvironment.enabled
+              ? 'validateDeclarationSchedule'
+              : 'validateMobileDeclaration')
+          : (LocalEnvironment.enabled
+              ? 'newDeclarationVersion'
+              : 'newMobileDeclarationVersion');
       try {
         await FirebaseFunctions.instanceFor(region: 'us-east1')
             .httpsCallable(functionName)

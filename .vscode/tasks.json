@@ -2,6 +2,13 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "DeclaraUCR: preparar esta PC",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": ["-NoProfile", "-ExecutionPolicy", "Bypass", "-File", "${workspaceFolder}/horario_ucr-main/Prepare-Local.ps1"],
+      "problemMatcher": []
+    },
+    {
       "label": "DeclaraUCR: iniciar Android",
       "type": "process",
       "command": "powershell.exe",

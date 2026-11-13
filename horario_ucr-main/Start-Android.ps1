@@ -1,18 +1,25 @@
 param([switch]$SkipBuild)
-$ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'Local-Common.ps1')
 Set-Location -LiteralPath $PSScriptRoot
-$sdk = Join-Path $env:LOCALAPPDATA 'Android\sdk'
+Set-LocalEnvironment
+$sdk = Find-AndroidSdk
+$env:ANDROID_HOME = $sdk
 $adb = Join-Path $sdk 'platform-tools\adb.exe'
 $emulator = Join-Path $sdk 'emulator\emulator.exe'
 $manager = Join-Path $sdk 'cmdline-tools\latest\bin\android.exe'
 if (-not (Test-Path -LiteralPath $adb)) { throw 'No se encontro Android SDK. Instala Android Studio y sus herramientas SDK.' }
 if (-not (Test-Path -LiteralPath (Join-Path $sdk 'system-images\android-36\google_apis\x86_64\package.xml'))) {
-    & $manager sdk install system-images/android-36/google_apis/x86_64
+    if (Test-Path -LiteralPath $manager) {
+        & $manager sdk install system-images/android-36/google_apis/x86_64
+    } else {
+        $legacyManager = Join-Path $sdk 'cmdline-tools\latest\bin\sdkmanager.bat'
+        if (-not (Test-Path -LiteralPath $legacyManager)) { throw 'Instala Android SDK Command-line Tools (latest) desde SDK Manager de Android Studio.' }
+        & $legacyManager 'system-images;android-36;google_apis;x86_64'
+    }
     if (-not (Test-Path -LiteralPath (Join-Path $sdk 'system-images\android-36\google_apis\x86_64\package.xml'))) { throw 'No se pudo preparar la imagen Android API 36.' }
 }
 $avds = & $emulator -list-avds
 if ($avds -notcontains 'DeclaraUCR_API36') {
-    $env:JAVA_HOME = 'C:\Program Files\Java\jdk-21'
     'no' | & (Join-Path $sdk 'cmdline-tools\latest\bin\avdmanager.bat') create avd --name DeclaraUCR_API36 --package 'system-images;android-36;google_apis;x86_64' --device pixel_6
     if ($LASTEXITCODE -ne 0) { throw 'No se pudo crear el telefono virtual DeclaraUCR.' }
 }

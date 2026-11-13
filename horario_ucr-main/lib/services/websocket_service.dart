@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'local_environment.dart';
 
@@ -15,6 +17,7 @@ class WebSocketService {
 
   WebSocketChannel? _channel;
   StreamSubscription<dynamic>? _subscription;
+  StreamSubscription<QuerySnapshot<Map<String, dynamic>>>? _cloudSubscription;
 
   Timer? _retryTimer;
   Timer? _authTimer;
@@ -50,6 +53,40 @@ class WebSocketService {
     }
 
     _stopped = false;
+    if (!LocalEnvironment.enabled) {
+      _cloudSubscription = FirebaseFirestore.instance
+          .collection('users')
+          .doc(_userId)
+          .collection('notifications')
+          .orderBy('createdAt', descending: true)
+          .limit(100)
+          .snapshots()
+          .listen((snapshot) {
+        if (_stopped || _disposed) return;
+        isConnected = true;
+        _emit({
+          'type': 'notifications_sync',
+          'notifications': snapshot.docs.map((doc) {
+            final data = Map<String, dynamic>.from(doc.data());
+            data['id'] = doc.id;
+            for (final key in ['createdAt', 'readAt']) {
+              if (data[key] is Timestamp) {
+                data[key] = (data[key] as Timestamp).toDate().toIso8601String();
+              }
+            }
+            return data;
+          }).toList()
+        });
+      }, onError: (Object error) {
+        isConnected = false;
+        _emit({
+          'type': 'error',
+          'message':
+              'No se pudo consultar la bandeja. Revisá tu conexión y sesión.'
+        });
+      });
+      return;
+    }
     await _open();
   }
 
@@ -198,6 +235,10 @@ class WebSocketService {
   }
 
   void markRead(String id) {
+    if (!LocalEnvironment.enabled) {
+      unawaited(_markCloud(id));
+      return;
+    }
     _send({
       'type': 'mark_read',
       'id': id,
@@ -205,12 +246,18 @@ class WebSocketService {
   }
 
   void markAllRead() {
+    if (!LocalEnvironment.enabled) {
+      unawaited(_markCloud(null));
+      return;
+    }
     _send({
       'type': 'mark_all_read',
     });
   }
 
   void disconnect() {
+    _cloudSubscription?.cancel();
+    _cloudSubscription = null;
     _stopped = true;
     _attempt++;
     isConnected = false;
@@ -236,5 +283,18 @@ class WebSocketService {
     disconnect();
     _disposed = true;
     _events.close();
+  }
+
+  Future<void> _markCloud(String? id) async {
+    try {
+      await FirebaseFunctions.instanceFor(region: 'us-east1')
+          .httpsCallable('markMobileNotificationsRead')
+          .call({if (id != null) 'id': id});
+    } catch (_) {
+      _emit({
+        'type': 'error',
+        'message': 'No se pudo marcar la notificación. Volvé a intentarlo.'
+      });
+    }
   }
 }

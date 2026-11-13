@@ -7,9 +7,8 @@ class DefaultFirebaseOptions {
       return web;
     }
 
-    throw UnsupportedError(
-      'Esta aplicación está configurada únicamente para Flutter Web.',
-    );
+    if (defaultTargetPlatform == TargetPlatform.android) return android;
+    throw UnsupportedError('Plataforma no configurada. Usá Android o web.');
   }
 
   static const FirebaseOptions web = FirebaseOptions(
@@ -18,6 +17,14 @@ class DefaultFirebaseOptions {
     messagingSenderId: '807844528626',
     projectId: 'declarahorario-ucr-cff7a',
     authDomain: 'declarahorario-ucr-cff7a.firebaseapp.com',
+    storageBucket: 'declarahorario-ucr-cff7a.firebasestorage.app',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyC6O15JqEI8ejYhBUCaelrjL8-cKgltW-A',
+    appId: '1:807844528626:android:91e2b604b8269a565a2b6b',
+    messagingSenderId: '807844528626',
+    projectId: 'declarahorario-ucr-cff7a',
     storageBucket: 'declarahorario-ucr-cff7a.firebasestorage.app',
   );
 }

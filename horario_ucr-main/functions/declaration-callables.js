@@ -9,6 +9,8 @@ const options = { region: 'us-east1', timeoutSeconds: 60, maxInstances: 2 };
 
 exports.saveDeclarationValidated = onCall(options, handlers.save);
 exports.saveDeclarationDraft = onCall(options, handlers.saveDraft);
+exports.validateMobileDeclaration = onCall(options, handlers.validateStored);
+exports.newMobileDeclarationVersion = onCall(options, handlers.newVersion);
 exports.validateDeclarationSchedule = onCall(options, handlers.validateStored);
 exports.newDeclarationVersion = onCall(options, handlers.newVersion);
 exports.listSuperiors = onCall(options, handlers.listSuperiors);

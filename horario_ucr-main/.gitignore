@@ -38,3 +38,4 @@ npm-debug.log*
 *-debug.log
 output/
 *.apk
+*.log

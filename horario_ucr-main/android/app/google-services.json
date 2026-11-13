@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "807844528626",
+    "project_id": "declarahorario-ucr-cff7a",
+    "storage_bucket": "declarahorario-ucr-cff7a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807844528626:android:e196cc3f4bc3e5c45a2b6b",
+        "android_client_info": {
+          "package_name": "com.example.horario_ucr_integrador"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6O15JqEI8ejYhBUCaelrjL8-cKgltW-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:807844528626:android:91e2b604b8269a565a2b6b",
+        "android_client_info": {
+          "package_name": "cr.ac.ucr.declaraucr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6O15JqEI8ejYhBUCaelrjL8-cKgltW-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

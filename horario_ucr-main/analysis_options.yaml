@@ -11,6 +11,10 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   exclude:
+    - node_modules/**
+    - functions/node_modules/**
+    - websocket_server/node_modules/**
+    - .local/**
     - build/**
     - android/**
     - web/**
